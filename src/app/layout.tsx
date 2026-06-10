@@ -4,6 +4,7 @@ import "./globals.css";
 import QueryProvider from "@/components/providers/QueryProvider";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { Toaster } from "sonner";
+import { Analytics } from "@vercel/analytics/react";
 import { getAppUrl } from "@/lib/utils/url";
 
 const inter = Inter({
@@ -65,6 +66,7 @@ export default function RootLayout({
         <QueryProvider>
           <AuthProvider>
             {children}
+            <Analytics />
             <Toaster theme="dark" position="bottom-right" closeButton />
           </AuthProvider>
         </QueryProvider>
