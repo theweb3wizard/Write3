@@ -3,8 +3,11 @@ import { createClient } from "@/lib/supabase/server";
 
 const PRICE_IDS: Record<string, string> = {
   creator: process.env.PADDLE_PRICE_CREATOR || "",
+  creator_annual: process.env.PADDLE_PRICE_CREATOR_ANNUAL || "",
   pro: process.env.PADDLE_PRICE_PRO || "",
+  pro_annual: process.env.PADDLE_PRICE_PRO_ANNUAL || "",
   agency: process.env.PADDLE_PRICE_AGENCY || "",
+  agency_annual: process.env.PADDLE_PRICE_AGENCY_ANNUAL || "",
 };
 
 export async function POST(request: Request) {
@@ -16,13 +19,14 @@ export async function POST(request: Request) {
     }
 
     const body = await request.json();
-    const { plan } = body;
+    const { plan, annual } = body;
 
     if (!plan || !["creator", "pro", "agency"].includes(plan)) {
       return NextResponse.json({ error: "Invalid plan" }, { status: 400 });
     }
 
-    const priceId = PRICE_IDS[plan];
+    const priceKey = annual ? `${plan}_annual` : plan;
+    const priceId = PRICE_IDS[priceKey];
     if (!priceId) {
       return NextResponse.json({ error: "Price not configured for this plan" }, { status: 500 });
     }

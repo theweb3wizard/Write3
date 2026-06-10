@@ -11,6 +11,7 @@ export default function ContentEditor() {
   const [projectId, setProjectId] = useState("");
   const [templateId, setTemplateId] = useState("");
   const [platform, setPlatform] = useState("twitter");
+  const [contentType, setContentType] = useState("announcement");
   const [tone, setTone] = useState(50);
   const [voiceProfileId, setVoiceProfileId] = useState("");
   const [topic, setTopic] = useState("");
@@ -54,7 +55,7 @@ export default function ContentEditor() {
           project_id: projectId,
           template_id: templateId,
           platform,
-          content_type: "announcement",
+          content_type: contentType,
           tone,
           voice_profile_id: voiceProfileId || null,
           topic,
@@ -116,6 +117,8 @@ export default function ContentEditor() {
                 templateId={templateId}
                 platform={platform}
                 onPlatformChange={setPlatform}
+                contentType={contentType}
+                onContentTypeChange={setContentType}
                 tone={tone}
                 onToneChange={setTone}
                 voiceProfileId={voiceProfileId}

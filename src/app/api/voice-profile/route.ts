@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generateJsonCompletion } from "@/lib/ai/client";
+import { canUseVoiceTraining, getMaxVoiceProfiles } from "@/lib/subscription/guards";
 import { z } from "zod";
 
 const CreateVoiceSchema = z.object({
@@ -55,6 +56,28 @@ export async function POST(request: Request) {
     }
 
     const { project_id, name, training_data } = parsed.data;
+
+    const { data: userProfile } = await supabase
+      .from("users")
+      .select("subscription_tier")
+      .eq("id", user.id)
+      .single();
+
+    const tier = userProfile?.subscription_tier || "free";
+
+    if (!canUseVoiceTraining(tier)) {
+      return NextResponse.json({ error: "Voice training is not available on the Free plan. Upgrade to create voice profiles." }, { status: 403 });
+    }
+
+    const { count } = await supabase
+      .from("voice_profiles")
+      .select("*", { count: "exact", head: true })
+      .eq("project_id", project_id);
+
+    const maxProfiles = getMaxVoiceProfiles(tier);
+    if ((count || 0) >= maxProfiles) {
+      return NextResponse.json({ error: `Voice profile limit reached (${maxProfiles}). Upgrade to create more profiles.` }, { status: 403 });
+    }
 
     const { data: project } = await supabase
       .from("projects")

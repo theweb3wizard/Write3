@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import { getAppUrl } from "@/lib/utils/url";
 
 export const metadata: Metadata = {
   title: "AI Content That Sounds Like Web3 | Write3",

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Copy, Check, RefreshCw, Save, ExternalLink } from "lucide-react";
+import { Copy, Check, RefreshCw, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
 
 interface PreviewPanelProps {
@@ -32,14 +32,6 @@ export default function PreviewPanel({
       setTimeout(() => setCopied(false), 2000);
     } catch {
       toast.error("Failed to copy");
-    }
-  };
-
-  const handleSave = async () => {
-    try {
-      toast.success("Content saved to library");
-    } catch {
-      toast.error("Failed to save");
     }
   };
 
@@ -140,13 +132,6 @@ export default function PreviewPanel({
             title="Copy to clipboard"
           >
             {copied ? <Check className="h-4 w-4 text-success" /> : <Copy className="h-4 w-4" />}
-          </button>
-          <button
-            onClick={handleSave}
-            className="p-2 rounded-lg text-gray-500 hover:text-white hover:bg-card-border/50 transition cursor-pointer"
-            title="Save to library"
-          >
-            <Save className="h-4 w-4" />
           </button>
           <button
             onClick={onRegenerate}

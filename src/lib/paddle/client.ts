@@ -36,8 +36,8 @@ export function openCheckout(paddle: any, priceId: string, userId: string) {
       displayMode: "overlay",
       successUrl: `${window.location.origin}/settings?checkout=success`,
     },
-    customer: {
-      id: userId,
+    customData: {
+      user_id: userId,
     },
   });
 }

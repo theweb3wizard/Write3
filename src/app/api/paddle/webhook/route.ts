@@ -36,7 +36,7 @@ export async function POST(request: Request) {
     }
 
     const rawBody = await request.text();
-    const signature = request.headers.get("paddle-signature") || "";
+    const signature = request.headers.get("paddle-signature") || request.headers.get("Paddle-Signature") || "";
 
     const webhooks = new Webhooks();
     const isValid = await webhooks.isSignatureValid(rawBody, secretKey, signature);
@@ -64,7 +64,11 @@ export async function POST(request: Request) {
     if (eventType === "subscription.created" || eventType === "subscription.updated") {
       const subscriptionId = data.id || "";
       const customerId = data.customer_id || "";
-      const planType = data.items?.[0]?.price?.name?.toLowerCase() || "free";
+      const rawPlanName = data.items?.[0]?.price?.name?.toLowerCase() || "";
+      const planType = rawPlanName.includes("creator") ? "creator"
+        : rawPlanName.includes("pro") ? "pro"
+        : rawPlanName.includes("agency") ? "agency"
+        : "free";
       const status = data.status || "active";
       const currentPeriodStart = data.current_billing_period?.starts_at || null;
       const currentPeriodEnd = data.current_billing_period?.ends_at || null;

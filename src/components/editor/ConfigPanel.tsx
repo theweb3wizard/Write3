@@ -13,6 +13,8 @@ interface ConfigPanelProps {
   templateId: string;
   platform: string;
   onPlatformChange: (p: string) => void;
+  contentType: string;
+  onContentTypeChange: (t: string) => void;
   tone: number;
   onToneChange: (t: number) => void;
   voiceProfileId: string;
@@ -33,6 +35,15 @@ interface ConfigPanelProps {
   onIncludeCtaChange: (v: boolean) => void;
 }
 
+const contentTypes = [
+  { value: "announcement", label: "Announcement" },
+  { value: "thread", label: "Thread" },
+  { value: "update", label: "Update" },
+  { value: "educational", label: "Educational" },
+  { value: "promotional", label: "Promotional" },
+  { value: "governance", label: "Governance" },
+];
+
 const platforms = [
   { value: "twitter", label: "Twitter/X" },
   { value: "discord", label: "Discord" },
@@ -44,6 +55,7 @@ const platforms = [
 
 export default function ConfigPanel({
   projectId, onProjectChange, templateId, platform, onPlatformChange,
+  contentType, onContentTypeChange,
   tone, onToneChange, voiceProfileId, onVoiceProfileChange,
   topic, onTopicChange, keyPoints, onKeyPointsChange,
   length, onLengthChange, model, onModelChange,
@@ -96,6 +108,25 @@ export default function ConfigPanel({
             <option key={p.id} value={p.id}>{p.name}</option>
           ))}
         </select>
+      </div>
+
+      <div>
+        <label className="text-xs font-medium text-gray-500 mb-1.5 block">Content Type</label>
+        <div className="grid grid-cols-3 gap-2">
+          {contentTypes.map((ct) => (
+            <button
+              key={ct.value}
+              onClick={() => onContentTypeChange(ct.value)}
+              className={`px-3 py-2 rounded-lg text-xs font-medium border transition cursor-pointer ${
+                contentType === ct.value
+                  ? "bg-electric-indigo/10 text-electric-indigo border-electric-indigo/20"
+                  : "border-card-border text-gray-500 hover:text-white hover:border-gray-500/30"
+              }`}
+            >
+              {ct.label}
+            </button>
+          ))}
+        </div>
       </div>
 
       <div>

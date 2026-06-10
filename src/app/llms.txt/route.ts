@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
+import { getAppUrl } from "@/lib/utils/url";
 
 export async function GET() {
-  const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://write3.vercel.app";
+  const appUrl = getAppUrl();
 
   const content = `# Write3 — AI-Powered Web3 Content Generator
 

@@ -133,6 +133,27 @@ export async function DELETE(request: Request) {
       return NextResponse.json({ error: "Project ID required" }, { status: 400 });
     }
 
+    const { error: contentError } = await supabase
+      .from("content_pieces")
+      .delete()
+      .eq("project_id", projectId);
+    if (contentError) throw contentError;
+
+    const { error: voiceError } = await supabase
+      .from("voice_profiles")
+      .delete()
+      .eq("project_id", projectId);
+    if (voiceError) throw voiceError;
+
+    const contentIds = (await supabase.from("content_pieces").select("id").eq("project_id", projectId)).data?.map(c => c.id) || [];
+
+    const { error: usageError } = await supabase
+      .from("usage_logs")
+      .delete()
+      .or(`resource_type.eq.voice_profile,resource_type.eq.content_piece`)
+      .in("resource_id", contentIds);
+    if (usageError) throw usageError;
+
     const { error } = await supabase
       .from("projects")
       .delete()

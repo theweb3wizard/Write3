@@ -114,10 +114,6 @@ export async function generateContent(params: GenerateContentParams): Promise<Ge
 
   let resolvedModel = modelId === "auto" ? getAutoModel(tier) : modelId;
 
-  for (const [key, value] of Object.entries(variables)) {
-    variables[key] = value;
-  }
-
   let userPrompt = template.default_prompt;
   Object.entries(variables).forEach(([key, value]) => {
     userPrompt = userPrompt.replace(new RegExp(`\\{${key}\\}`, "g"), value);

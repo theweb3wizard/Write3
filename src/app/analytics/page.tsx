@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import AppShell from "@/components/layout/AppShell";
 import { BarChart3, Globe, FileText, Cpu, TrendingUp } from "lucide-react";
+import { getGenerationLimit } from "@/lib/subscription/guards";
 
 export default function AnalyticsPage() {
   const [data, setData] = useState<any>(null);
@@ -152,20 +153,20 @@ export default function AnalyticsPage() {
                   <span className="text-sm text-gray-400">Plan</span>
                   <span className="text-sm text-white font-medium capitalize">{data.subscription.subscription_tier}</span>
                 </div>
-                <div>
-                  <div className="flex items-center justify-between mb-1.5">
-                    <span className="text-sm text-gray-400">Monthly Generations</span>
-                    <span className="text-sm text-white font-medium">
-                      {data.subscription.monthly_generation_count} / {data.subscription.subscription_tier === "free" ? "50" : "Unlimited"}
-                    </span>
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-sm text-gray-400">Monthly Generations</span>
+                      <span className="text-sm text-white font-medium">
+                        {data.subscription.monthly_generation_count} / {getGenerationLimit(data.subscription.subscription_tier)}
+                      </span>
+                    </div>
+                    <div className="h-2 rounded-full bg-card-border overflow-hidden">
+                      <div
+                        className="h-full rounded-full bg-gradient-premium transition-all duration-500"
+                        style={{ width: `${Math.min((data.subscription.monthly_generation_count / getGenerationLimit(data.subscription.subscription_tier)) * 100, 100)}%` }}
+                      />
+                    </div>
                   </div>
-                  <div className="h-2 rounded-full bg-card-border overflow-hidden">
-                    <div
-                      className="h-full rounded-full bg-gradient-premium transition-all duration-500"
-                      style={{ width: `${Math.min((data.subscription.monthly_generation_count / 50) * 100, 100)}%` }}
-                    />
-                  </div>
-                </div>
               </div>
             ) : (
               <p className="text-sm text-gray-500 text-center py-8">No subscription data</p>

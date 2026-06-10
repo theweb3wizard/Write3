@@ -10,9 +10,10 @@ interface CheckoutButtonProps {
   label?: string;
   className?: string;
   disabled?: boolean;
+  annual?: boolean;
 }
 
-export default function CheckoutButton({ plan, label, className, disabled }: CheckoutButtonProps) {
+export default function CheckoutButton({ plan, label, className, disabled, annual }: CheckoutButtonProps) {
   const [loading, setLoading] = useState(false);
 
   const handleCheckout = async () => {
@@ -21,7 +22,7 @@ export default function CheckoutButton({ plan, label, className, disabled }: Che
       const res = await fetch("/api/paddle/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ plan }),
+        body: JSON.stringify({ plan, annual }),
       });
 
       const json = await res.json();

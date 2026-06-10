@@ -30,7 +30,7 @@ const plans = [
     description: "For solo founders, influencers, and independent creators.",
     tier: "creator",
     features: [
-      "Unlimited generations",
+      "500 content generations per month",
       "All platforms (Twitter, Discord, Telegram, Blog, Newsletter, Farcaster)",
       "1 voice training profile",
       "Basic analytics",
@@ -46,7 +46,7 @@ const plans = [
     description: "For professional community managers and small teams.",
     tier: "pro",
     features: [
-      "Unlimited generations",
+      "2,000 content generations per month",
       "All platforms",
       "3 voice training profiles",
       "Advanced analytics",
@@ -64,7 +64,7 @@ const plans = [
     description: "For marketing agencies managing multiple clients.",
     tier: "agency",
     features: [
-      "Unlimited generations",
+      "10,000 content generations per month",
       "All platforms",
       "10 voice training profiles",
       "Advanced analytics",
@@ -159,6 +159,7 @@ export default function PricingPage() {
                   <CheckoutButton
                     plan={plan.tier}
                     label={plan.cta}
+                    annual={annual}
                     className={`w-full mb-6 py-2.5 rounded-lg text-sm font-semibold ${
                       plan.popular
                         ? "bg-gradient-premium text-white hover:opacity-90"
