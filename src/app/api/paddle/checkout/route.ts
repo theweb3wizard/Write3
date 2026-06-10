@@ -36,7 +36,6 @@ export async function POST(request: Request) {
       data: {
         priceId,
         customerId: user.id,
-        customerEmail: user.email,
       },
     });
   } catch (err: any) {

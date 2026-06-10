@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import MarketingLayout from "@/components/layout/MarketingLayout";
-import { Check, Sparkles } from "lucide-react";
+import { Check } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 import CheckoutButton from "@/components/billing/CheckoutButton";
@@ -18,7 +18,6 @@ const plans = [
       "50 content generations per month",
       "Basic templates",
       "Single platform output",
-      "Write3 watermark",
     ],
     cta: "Start Free",
     popular: false,

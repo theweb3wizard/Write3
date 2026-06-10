@@ -68,7 +68,7 @@ export async function POST(request: Request) {
       }, { status: 403 });
     }
 
-    const rateLimitResult = await checkRateLimit(`generate:${user.id}`, 20, 10);
+    const rateLimitResult = await checkRateLimit(`generate:${user.id}`);
     if (!rateLimitResult.success) {
       return NextResponse.json({
         error: "Rate limit exceeded. Please wait before generating again.",
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
 
     const { data: project } = await supabase
       .from("projects")
-      .select("id, user_id, name, description, project_type, tone_setting, voice_profile_id")
+      .select("id, user_id, name, description, project_type, tone_setting")
       .eq("id", project_id)
       .single();
 

@@ -14,7 +14,7 @@ export async function getPaddle() {
   try {
     paddleInstance = await initializePaddle({
       token: clientToken,
-      environment: process.env.APP_ENV === "production" ? "production" : "sandbox",
+      environment: process.env.NEXT_PUBLIC_PADDLE_ENV === "production" ? "production" : "sandbox",
     });
     return paddleInstance;
   } catch (err) {

@@ -29,17 +29,13 @@ try {
  * Returns a validation result with success status and limits.
  */
 export async function checkRateLimit(
-  identifier: string,
-  requestsPerWindow = 60,
-  windowSeconds = 60
+  identifier: string
 ): Promise<{ success: boolean; limit: number; remaining: number; reset: number }> {
   if (!ratelimit) {
-    // Return bypass mock
-    return { success: true, limit: requestsPerWindow, remaining: requestsPerWindow, reset: 0 };
+    return { success: true, limit: 60, remaining: 60, reset: 0 };
   }
 
   try {
-    // Custom ratelimit configuration per check if needed, but the base instance handles sliding window limit
     const result = await ratelimit.limit(identifier);
     
     return {
@@ -50,6 +46,6 @@ export async function checkRateLimit(
     };
   } catch (err) {
     console.error("Rate limit check failed, bypassing:", err);
-    return { success: true, limit: requestsPerWindow, remaining: requestsPerWindow, reset: 0 };
+    return { success: true, limit: 60, remaining: 60, reset: 0 };
   }
 }
