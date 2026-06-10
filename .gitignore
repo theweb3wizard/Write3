@@ -36,6 +36,9 @@ yarn-error.log*
 # vercel
 .vercel
 
+# drafts (unpublished content)
+/drafts
+
 # typescript
 *.tsbuildinfo
 next-env.d.ts
