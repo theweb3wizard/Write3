@@ -45,7 +45,7 @@ export const metadata: Metadata = {
   description: defaultMetadata.description,
   keywords: defaultMetadata.keywords,
   verification: {
-    google: "google6628727a9aca5852",
+    google: "gfSpne3c8Ou3eCSNSUGXFjtZmv4S8bo4_7CfiN3qyqY",
   },
   icons: {
     icon: [
