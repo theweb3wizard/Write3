@@ -34,6 +34,7 @@ export default function Footer() {
             <div className="space-y-2">
               <Link href="/privacy" className="block text-sm text-gray-500 hover:text-gray-300 transition">Privacy Policy</Link>
               <Link href="/terms" className="block text-sm text-gray-500 hover:text-gray-300 transition">Terms of Service</Link>
+              <Link href="/refund" className="block text-sm text-gray-500 hover:text-gray-300 transition">Refund Policy</Link>
             </div>
           </div>
         </div>
