@@ -1,36 +1,113 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Write3
+
+AI-powered Web3 content generator. Generates authentic, platform-native content for Twitter/X, Discord, Telegram, Farcaster, blogs, and newsletters — purpose-built for crypto communities, DAOs, NFT projects, and DeFi protocols.
+
+## Features
+
+- **Multi-platform generation** — Native formatting for 6 channels (Twitter threads, Discord markdown, Telegram updates, Farcaster casts, blog posts, newsletters)
+- **Voice training** — AI analyzes your existing content and replicates your community's unique voice and writing patterns
+- **Template library** — Purpose-built prompts for announcements, governance proposals, AMAs, product launches, and market commentary
+- **Tone control** — Slider from degen (0) to institutional (100) adjusts voice, vocabulary, and formality
+- **Multi-model AI** — Routes through OpenRouter to Google Gemini, Anthropic Claude, OpenAI GPT-4o, and DeepSeek — gated by subscription tier
+- **Project management** — Organize content by project with full CRUD
+- **Content library** — Search, filter by platform/status, pagination, inline status updates
+- **Usage analytics** — Platform breakdown, daily counts, token usage, plan tracking
+- **Subscription billing** — Free/Creator/Pro/Agency tiers via Paddle
+
+## Tech Stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Next.js 16 (App Router, Turbopack) |
+| Database | Supabase (PostgreSQL, Auth, RLS) |
+| AI | OpenRouter (Gemini, Claude, GPT-4o, DeepSeek) |
+| Payments | Paddle (browser SDK + node SDK + webhooks) |
+| Rate Limiting | Upstash Redis + Ratelimit |
+| Styling | Tailwind CSS v4 |
+| Fonts | Inter + JetBrains Mono |
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+# Install dependencies
+npm install
+
+# Copy environment variables
+cp .env.example .env.local
+
+# Fill in your keys:
+#   OPENROUTER_API_KEY    — https://openrouter.ai/keys
+#   NEXT_PUBLIC_SUPABASE_URL + anon + service_role — Supabase dashboard
+#   UPSTASH_REDIS_REST_URL + token — Upstash console
+#   NEXT_PUBLIC_PADDLE_CLIENT_TOKEN + webhook secret — Paddle dashboard
+
+# Run migrations on your Supabase database
+# (Run the SQL in supabase/migrations/ against your Supabase SQL editor)
+
+# Start dev server
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) to see the app.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Project Structure
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/                    # Next.js App Router pages + API routes
+│   ├── (marketing)/        # Landing page
+│   ├── api/                # API routes (generate, projects, content, etc.)
+│   ├── auth/               # Auth pages (login, callback)
+│   ├── dashboard/          # Dashboard page
+│   ├── generate/           # Content generation editor
+│   ├── library/            # Content library
+│   ├── pricing/            # Pricing/subscriptions
+│   └── voice-training/     # Voice profile training
+├── components/
+│   ├── auth/               # Auth form, OAuth buttons, callback
+│   ├── billing/            # CheckoutButton
+│   ├── editor/             # ContentEditor, ConfigPanel, PreviewPanel
+│   ├── layout/             # AppShell, Sidebar, Footer, MarketingLayout
+│   └── ui/                 # Shared UI (cards, loaders, error boundaries)
+├── hooks/                  # React hooks (useSubscription)
+├── lib/
+│   ├── ai/                 # OpenRouter client + model registry + content gen
+│   ├── paddle/             # Paddle browser SDK client
+│   ├── seo/                # Metadata config
+│   ├── subscription/       # Tier guards, generation limits
+│   ├── supabase/           # Client/server/admin Supabase clients
+│   └── utils/              # URL resolution, etc.
+└── stores/                 # Zustand store (user profile)
+```
 
-## Learn More
+## Environment Variables
 
-To learn more about Next.js, take a look at the following resources:
+| Variable | Required | Description |
+|---|---|---|
+| `OPENROUTER_API_KEY` | Yes | AI generation via OpenRouter |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous key |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (admin) |
+| `UPSTASH_REDIS_REST_URL` | No* | Rate limiting (dev bypass if missing) |
+| `UPSTASH_REDIS_REST_TOKEN` | No* | Rate limiting |
+| `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN` | No* | Paddle checkout UI |
+| `PADDLE_WEBHOOK_SECRET` | No* | Paddle webhook verification |
+| `PADDLE_PRICE_CREATOR/PRO/AGENCY` | No* | Price IDs for subscription plans |
+| `NEXT_PUBLIC_APP_URL` | No | Canonical URL (auto-detected on Vercel) |
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+\* Optional for development; required in production for feature to work.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Deployment
 
-## Deploy on Vercel
+Deploy to Vercel with zero config:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm install -g vercel
+vercel --prod
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Set all environment variables in Vercel → Project → Settings → Environment Variables, then run the Supabase migrations on your production database.
+
+## License
+
+MIT

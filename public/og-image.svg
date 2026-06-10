@@ -1,0 +1,18 @@
+<svg width="1200" height="630" viewBox="0 0 1200 630" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <rect width="1200" height="630" fill="#0A0E1A"/>
+  <rect x="60" y="60" width="1080" height="510" rx="32" fill="#111827" stroke="#1F2937" stroke-width="2"/>
+  <defs>
+    <linearGradient id="ogGrad" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#6366F1"/>
+      <stop offset="100%" stop-color="#22D3EE"/>
+    </linearGradient>
+  </defs>
+  <g transform="translate(600, 240)">
+    <path d="M-60 25 L-24 -50 L0 0 L24 -50 L60 25" stroke="url(#ogGrad)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+    <path d="M-38 -15 L-38 62" stroke="url(#ogGrad)" stroke-width="7" stroke-linecap="round"/>
+    <path d="M38 -15 L38 62" stroke="url(#ogGrad)" stroke-width="7" stroke-linecap="round"/>
+    <text x="0" y="110" text-anchor="middle" fill="url(#ogGrad)" font-family="Inter, sans-serif" font-weight="800" font-size="48">3</text>
+  </g>
+  <text x="600" y="380" text-anchor="middle" fill="white" font-family="Inter, sans-serif" font-weight="700" font-size="64">Write3</text>
+  <text x="600" y="430" text-anchor="middle" fill="#9CA3AF" font-family="Inter, sans-serif" font-weight="400" font-size="24">AI-Powered Web3 Content Generator</text>
+</svg>
