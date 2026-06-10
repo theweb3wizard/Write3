@@ -1,5 +1,4 @@
 import AuthForm from "@/components/auth/AuthForm";
-import OAuthButtons from "@/components/auth/OAuthButtons";
 import { Sparkles } from "lucide-react";
 import { Suspense } from "react";
 
@@ -26,21 +25,6 @@ export default function LoginPage() {
 
         {/* Auth Card */}
         <div className="rounded-2xl border border-card-border bg-card/60 backdrop-blur-xl p-8 shadow-2xl space-y-6">
-          {/* Social Logins */}
-          <div className="space-y-4">
-            <OAuthButtons />
-          </div>
-
-          {/* Divider */}
-          <div className="relative flex items-center justify-center py-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-card-border" />
-            </div>
-            <span className="relative bg-card/90 px-3 text-xs text-gray-500 uppercase tracking-widest">
-              or
-            </span>
-          </div>
-
           {/* Email Login/Signup */}
           <Suspense fallback={<div className="text-center py-4 text-sm text-gray-400">Loading auth forms...</div>}>
             <AuthForm />
