@@ -29,7 +29,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white mb-3">2. Description of Service</h2>
-            <p>Write3 is an AI-powered content generation platform designed for Web3 communities. The Service allows users to generate, edit, and manage content across multiple platforms including Twitter/X, Discord, Telegram, Farcaster, blogs, and newsletters using AI models and customizable voice profiles.</p>
+                <p>Write3 is an AI-powered content generation platform designed for Web3 communities, operated by The Web3 Wizard ("we," "us," or "our"). The Service allows users to generate, edit, and manage content across multiple platforms including Twitter/X, Discord, Telegram, Farcaster, blogs, and newsletters using AI models and customizable voice profiles.</p>
           </section>
 
           <section>
@@ -96,7 +96,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white mb-3">11. Contact</h2>
-            <p>For questions about these terms, contact us at legal@write3.io.</p>
+                <p>These terms are an agreement between you and <strong className="text-white">The Web3 Wizard</strong>. For questions about these terms, contact us at legal@write3.io.</p>
           </section>
         </div>
       </main>
