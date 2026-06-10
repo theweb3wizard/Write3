@@ -28,7 +28,6 @@ export default function LoginPage() {
         <div className="rounded-2xl border border-card-border bg-card/60 backdrop-blur-xl p-8 shadow-2xl space-y-6">
           {/* Social Logins */}
           <div className="space-y-4">
-            <h2 className="text-sm font-semibold text-gray-300">Connect with</h2>
             <OAuthButtons />
           </div>
 
