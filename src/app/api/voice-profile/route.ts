@@ -90,7 +90,7 @@ export async function POST(request: Request) {
     }
 
     const result = await generateJsonCompletion({
-      model: "google/gemini-2.0-flash-001",
+      model: "~google/gemini-flash-latest",
       messages: [{
         role: "user",
         content: `Analyze the following Web3 content and extract voice characteristics. Return a JSON object with:

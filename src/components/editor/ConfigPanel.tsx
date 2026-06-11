@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { useUserStore } from "@/stores/userStore";
 import { useSubscription } from "@/hooks/useSubscription";
-import { getModelsForTier, type AIModel } from "@/lib/ai/models";
-import { Settings2, ChevronDown, Sparkles } from "lucide-react";
+import { getModelsForTier } from "@/lib/ai/models";
+import { Settings2, ChevronDown } from "lucide-react";
 
 interface ConfigPanelProps {
   projectId: string;

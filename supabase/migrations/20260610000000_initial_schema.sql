@@ -154,6 +154,10 @@ CREATE POLICY "Users can view own usage"
 ON public.usage_logs FOR SELECT 
 USING (auth.uid() = user_id);
 
+CREATE POLICY "Users can insert own usage" 
+ON public.usage_logs FOR INSERT 
+WITH CHECK (auth.uid() = user_id);
+
 -- 7. SUBSCRIPTIONS TABLE (Paddle Integrations)
 CREATE TABLE public.subscriptions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

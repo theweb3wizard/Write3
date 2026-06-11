@@ -8,7 +8,7 @@ AI-powered Web3 content generator. Generates authentic, platform-native content 
 - **Voice training** — AI analyzes your existing content and replicates your community's unique voice and writing patterns
 - **Template library** — Purpose-built prompts for announcements, governance proposals, AMAs, product launches, and market commentary
 - **Tone control** — Slider from degen (0) to institutional (100) adjusts voice, vocabulary, and formality
-- **Multi-model AI** — Routes through OpenRouter to Google Gemini, Anthropic Claude, OpenAI GPT-4o, and DeepSeek — gated by subscription tier
+- **Multi-model AI** — Routes through OpenRouter to Google Gemini Flash, Anthropic Claude, OpenAI GPT-4o, and DeepSeek — gated by subscription tier (free tier: Gemini Flash Latest + GPT-4o Mini + DeepSeek; auto picks optimally per tier)
 - **Project management** — Organize content by project with full CRUD
 - **Content library** — Search, filter by platform/status, pagination, inline status updates
 - **Usage analytics** — Platform breakdown, daily counts, token usage, plan tracking
@@ -20,7 +20,7 @@ AI-powered Web3 content generator. Generates authentic, platform-native content 
 |---|---|
 | Framework | Next.js 16 (App Router, Turbopack) |
 | Database | Supabase (PostgreSQL, Auth, RLS) |
-| AI | OpenRouter (Gemini, Claude, GPT-4o, DeepSeek) |
+| AI | OpenRouter (Gemini Flash, Claude, GPT-4o, DeepSeek) |
 | Payments | Paddle (browser SDK + node SDK + webhooks) |
 | Rate Limiting | Upstash Redis + Ratelimit |
 | Styling | Tailwind CSS v4 |

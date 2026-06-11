@@ -17,8 +17,8 @@ const TIER_ORDER: Record<string, number> = {
 
 export const AVAILABLE_MODELS: AIModel[] = [
   {
-    id: "google/gemini-2.0-flash-001",
-    name: "Gemini 2.0 Flash",
+    id: "~google/gemini-flash-latest",
+    name: "Gemini Flash Latest",
     provider: "Google",
     providerColor: "text-blue-400",
     minTier: "free",
@@ -102,7 +102,7 @@ export function isModelAccessible(modelId: string, tier: string): boolean {
 }
 
 export function getAutoModel(tier: string): string {
-  if (tier === "free") return "google/gemini-2.0-flash-001";
+  if (tier === "free") return "~google/gemini-flash-latest";
   if (tier === "creator") return "openai/gpt-4o-mini";
   return "anthropic/claude-sonnet-4";
 }

@@ -1,5 +1,5 @@
-import { generateJsonCompletion, generateChatCompletion } from "./client";
-import { isModelAccessible, getAutoModel, getModelById } from "./models";
+import { generateJsonCompletion } from "./client";
+import { isModelAccessible, getAutoModel } from "./models";
 
 interface GenerateContentParams {
   project: {
@@ -124,7 +124,7 @@ export async function generateContent(params: GenerateContentParams): Promise<Ge
   let lastError: any = null;
   const maxRetries = 3;
 
-  const fallbackModels = ["google/gemini-2.0-flash-001", "deepseek/deepseek-chat"];
+  const fallbackModels = ["~google/gemini-flash-latest", "deepseek/deepseek-chat"];
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
