@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateContent } from "@/lib/ai/content-generation";
-import { canGenerate, canUseVoiceTraining, getGenerationLimit } from "@/lib/subscription/guards";
+import { canGenerate, canUseBrandStyleAlignment, getGenerationLimit } from "@/lib/subscription/guards";
 import { checkRateLimit } from "@/lib/rate-limit";
 import { isModelAccessible } from "@/lib/ai/models";
 import { z } from "zod";
@@ -100,8 +100,8 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Template not found" }, { status: 404 });
     }
 
-    if (voice_profile_id && !canUseVoiceTraining(tier)) {
-      return NextResponse.json({ error: "Voice profiles are not available on the Free plan. Upgrade to use them." }, { status: 403 });
+    if (voice_profile_id && !canUseBrandStyleAlignment(tier)) {
+      return NextResponse.json({ error: "Style profiles are not available on the Free plan. Upgrade to use them." }, { status: 403 });
     }
 
     let voiceProfile = null;

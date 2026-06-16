@@ -1,5 +1,5 @@
 import { useUserStore } from "@/stores/userStore";
-import { getGenerationLimit, canGenerate, canUseVoiceTraining, getMaxVoiceProfiles } from "@/lib/subscription/guards";
+import { getGenerationLimit, canGenerate, canUseBrandStyleAlignment, getMaxVoiceProfiles } from "@/lib/subscription/guards";
 
 export function useSubscription() {
   const { user, status } = useUserStore();
@@ -12,7 +12,7 @@ export function useSubscription() {
     generationCount,
     limit: getGenerationLimit(tier),
     canGenerate: status === "authenticated" && user ? canGenerate(user) : false,
-    canUseVoiceTraining: canUseVoiceTraining(tier),
+    canUseBrandStyleAlignment: canUseBrandStyleAlignment(tier),
     maxVoiceProfiles: getMaxVoiceProfiles(tier),
     isFree: tier === "free",
     isCreator: tier === "creator",

@@ -18,12 +18,14 @@ export default function Footer() {
             <div className="space-y-2">
               <Link href="/#features" className="block text-sm text-gray-500 hover:text-gray-300 transition">Features</Link>
               <Link href="/pricing" className="block text-sm text-gray-500 hover:text-gray-300 transition">Pricing</Link>
+              <Link href="/use-cases" className="block text-sm text-gray-500 hover:text-gray-300 transition">Use Cases</Link>
             </div>
           </div>
 
           <div>
-            <h4 className="text-sm font-semibold text-white mb-3">Resources</h4>
+            <h4 className="text-sm font-semibold text-white mb-3">Company</h4>
             <div className="space-y-2">
+              <Link href="/about" className="block text-sm text-gray-500 hover:text-gray-300 transition">About Us</Link>
               <Link href="/auth/login" className="block text-sm text-gray-500 hover:text-gray-300 transition">Dashboard</Link>
               <Link href="/auth/login" className="block text-sm text-gray-500 hover:text-gray-300 transition">Get Started</Link>
             </div>

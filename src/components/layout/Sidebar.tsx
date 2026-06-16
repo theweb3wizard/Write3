@@ -12,7 +12,7 @@ const navItems = [
   { href: "/generate", label: "Generate", icon: FileText },
   { href: "/projects", label: "Projects", icon: FolderOpen },
   { href: "/library", label: "Library", icon: BookTemplate },
-  { href: "/voice-training", label: "Voice Training", icon: Brain },
+  { href: "/voice-training", label: "Brand Style Alignment", icon: Brain },
   { href: "/analytics", label: "Analytics", icon: BarChart3 },
   { href: "/settings", label: "Settings", icon: Settings },
 ];

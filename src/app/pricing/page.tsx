@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import MarketingLayout from "@/components/layout/MarketingLayout";
-import { Check } from "lucide-react";
+import { Check, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 import CheckoutButton from "@/components/billing/CheckoutButton";
@@ -31,7 +31,7 @@ const plans = [
     features: [
       "500 content generations per month",
       "All platforms (Twitter, Discord, Telegram, Blog, Newsletter, Farcaster)",
-      "1 voice training profile",
+      "1 brand style profile",
       "Basic analytics",
       "Priority support",
     ],
@@ -47,7 +47,7 @@ const plans = [
     features: [
       "2,000 content generations per month",
       "All platforms",
-      "3 voice training profiles",
+      "3 brand style profiles",
       "Advanced analytics",
       "Team access (3 seats)",
       "API access",
@@ -65,7 +65,7 @@ const plans = [
     features: [
       "10,000 content generations per month",
       "All platforms",
-      "10 voice training profiles",
+      "10 brand style profiles",
       "Advanced analytics",
       "Team access (10 seats)",
       "API access",
@@ -179,6 +179,15 @@ export default function PricingPage() {
               </div>
             );
           })}
+        </div>
+        <div className="mt-12 text-center">
+          <div className="inline-flex items-center gap-2 px-5 py-3 rounded-xl border border-success/20 bg-success/5">
+            <Shield className="h-5 w-5 text-success" />
+            <div className="text-left">
+              <p className="text-sm font-semibold text-white">30-Day Money Back Guarantee</p>
+              <p className="text-xs text-gray-500">Not satisfied? Full refund within 30 days, no questions asked.</p>
+            </div>
+          </div>
         </div>
       </div>
     </MarketingLayout>

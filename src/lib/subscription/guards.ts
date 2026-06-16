@@ -18,7 +18,7 @@ export function canGenerate(user: { subscription_tier: string; monthly_generatio
   return user.monthly_generation_count < limit;
 }
 
-export function canUseVoiceTraining(tier: string): boolean {
+export function canUseBrandStyleAlignment(tier: string): boolean {
   return tier !== "free";
 }
 

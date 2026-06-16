@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generateJsonCompletion } from "@/lib/ai/client";
-import { canUseVoiceTraining, getMaxVoiceProfiles } from "@/lib/subscription/guards";
+import { canUseBrandStyleAlignment, getMaxVoiceProfiles } from "@/lib/subscription/guards";
 import { z } from "zod";
 
 const CreateVoiceSchema = z.object({
@@ -65,8 +65,8 @@ export async function POST(request: Request) {
 
     const tier = userProfile?.subscription_tier || "free";
 
-    if (!canUseVoiceTraining(tier)) {
-      return NextResponse.json({ error: "Voice training is not available on the Free plan. Upgrade to create voice profiles." }, { status: 403 });
+    if (!canUseBrandStyleAlignment(tier)) {
+      return NextResponse.json({ error: "Brand Style Alignment is not available on the Free plan. Upgrade to create style profiles." }, { status: 403 });
     }
 
     const { count } = await supabase

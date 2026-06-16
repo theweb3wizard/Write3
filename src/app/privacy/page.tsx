@@ -27,7 +27,7 @@ export default function PrivacyPage() {
             <p className="mb-3">We collect information you provide directly when using Write3:</p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Account Information:</strong> Email address, username, and avatar URL when you sign up via email, GitHub, or Google OAuth.</li>
-              <li><strong className="text-white">Content Data:</strong> Generated content pieces, project configurations, voice training data, and template selections.</li>
+              <li><strong className="text-white">Content Data:</strong> Generated content pieces, project configurations, brand style analysis data, and template selections.</li>
               <li><strong className="text-white">Payment Information:</strong> We use Paddle as our payment processor. Write3 does not store credit card numbers. Paddle collects billing information and shares only confirmation details with us.</li>
               <li><strong className="text-white">Wallet Address:</strong> If you choose to connect a Web3 wallet, we store your public wallet address for personalization features.</li>
             </ul>

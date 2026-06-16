@@ -169,7 +169,7 @@ export default function ConfigPanel({
       </div>
 
       <div>
-        <label className="text-xs font-medium text-gray-500 mb-1.5 block">Voice Profile</label>
+        <label className="text-xs font-medium text-gray-500 mb-1.5 block">Style Profile</label>
         <select
           value={voiceProfileId}
           onChange={(e) => onVoiceProfileChange(e.target.value)}
