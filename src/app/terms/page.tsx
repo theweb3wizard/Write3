@@ -29,7 +29,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white mb-3">2. Description of Service</h2>
-                <p>Write3 is an AI-powered content generation platform designed for Web3 communities, operated by The Web3 Wizard ("we," "us," or "our"). The Service allows users to generate, edit, and manage content across multiple platforms including Twitter/X, Discord, Telegram, Farcaster, blogs, and newsletters using AI models and customizable voice profiles.</p>
+                <p>Write3 is an AI-powered content generation platform designed for Web3 communities. The Service allows users to generate, edit, and manage content across multiple platforms including Twitter/X, Discord, Telegram, Farcaster, blogs, and newsletters using AI models and customizable style profiles.</p>
           </section>
 
           <section>
@@ -68,7 +68,7 @@ export default function TermsPage() {
               <li>Use the Service to train competing AI models or extract training data</li>
               <li>Share accounts across multiple organizations (each organization requires its own subscription)</li>
             </ul>
-            <p className="mt-3 text-xs text-gray-500"><strong className="text-white">Reporting Violations:</strong> If you encounter content that violates these terms, please report it immediately to abuse@write3.io. We investigate all reports and will take appropriate action, including account termination for verified violations.</p>
+            <p className="mt-3 text-xs text-gray-500"><strong className="text-white">Reporting Violations:</strong> If you encounter content that violates these terms, please report it through the dashboard or contact us directly. We investigate all reports and will take appropriate action, including account termination for verified violations.</p>
           </section>
 
           <section>
@@ -112,7 +112,7 @@ export default function TermsPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white mb-3">12. Contact</h2>
-                <p>These terms are an agreement between you and <strong className="text-white">The Web3 Wizard</strong>. For questions about these terms, contact us at legal@write3.io.</p>
+                <p>These terms are an agreement between you and the operator of Write3. For questions about these terms, contact us through the dashboard or via the contact information provided on our website.</p>
           </section>
         </div>
       </main>

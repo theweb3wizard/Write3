@@ -77,7 +77,7 @@ export default function PrivacyPage() {
               <li>Export your data in a portable format</li>
               <li>Object to processing of your data</li>
             </ul>
-            <p className="mt-3">To exercise these rights, contact us at privacy@write3.io or use the account deletion option in Settings.</p>
+            <p className="mt-3">To exercise these rights, use the account deletion option in Settings or contact us through the dashboard.</p>
           </section>
 
           <section>
@@ -92,7 +92,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white mb-3">9. Contact</h2>
-            <p>For questions about this privacy policy, contact us at privacy@write3.io.</p>
+            <p>For questions about this privacy policy, contact us through the dashboard.</p>
           </section>
         </div>
       </main>

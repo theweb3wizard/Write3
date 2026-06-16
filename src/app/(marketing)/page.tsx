@@ -15,9 +15,9 @@ const features = [
 ];
 
 const caseStudies = [
-  { quote: "Write3 saves us 15+ hours a week on content drafting. The brand style alignment is remarkable — it captures our community voice while we review and refine before posting.", author: "Alex Chen", role: "Community Lead, DeFi Protocol", result: "15+ hrs/week saved" },
-  { quote: "Finally, an AI tool that doesn't sound like a corporate blog. The structured drafting for Telegram and Discord lets our team produce consistent updates that our community loves.", author: "Sarah M.", role: "CMO, NFT Project", result: "3x content output" },
-  { quote: "We manage 8 client projects. Write3's agency plan with brand style profiles for each client is a game changer for our team's productivity.", author: "Marcus Williams", role: "Founder, Web3 Marketing Agency", result: "8 client successes" },
+  { quote: "The brand style alignment is remarkable — it captures our community voice while we review and refine before posting. Saves us hours every week on content drafting.", author: "Community Lead", role: "DeFi Protocol", result: "15+ hrs/week saved" },
+  { quote: "Finally, an AI tool that doesn't sound like a corporate blog. The structured drafting for Telegram and Discord lets our team produce consistent updates that our community loves.", author: "CMO", role: "NFT Project", result: "3x content output" },
+  { quote: "We manage multiple client projects. Write3's agency plan with brand style profiles for each client is a game changer for our team's productivity.", author: "Founder", role: "Web3 Marketing Agency", result: "Multiple clients" },
 ];
 
 const platforms = [
@@ -346,7 +346,7 @@ export default function LandingPage() {
                 <h3 className="text-lg font-semibold text-white">Safety & Moderation</h3>
               </div>
               <p className="text-sm text-gray-400 leading-relaxed">
-                Write3 implements robust content moderation and filtering mechanisms leveraging advanced AI safety features to prevent prohibited content generation. We provide clear mechanisms for users to report misuse at <strong className="text-white">abuse@write3.io</strong>. All reports are investigated with appropriate action taken, including account termination for verified violations.
+                Write3 implements robust content moderation and filtering mechanisms leveraging advanced AI safety features to prevent prohibited content generation. We provide clear mechanisms for users to report misuse through the dashboard. All reports are investigated with appropriate action taken, including account termination for verified violations.
               </p>
             </div>
           </div>

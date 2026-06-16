@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
-import { Shield, Mail, MapPin, Building2, Sparkles } from "lucide-react";
+import { Shield, Sparkles, Building2, Mail } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About Us - Write3 AI",
@@ -67,30 +67,12 @@ export default function AboutPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-white mb-3">Company Information</h2>
-            <div className="rounded-xl border border-card-border bg-card p-5 space-y-3">
-              <div className="flex items-center gap-3">
-                <Building2 className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                <div>
-                  <p className="text-sm font-medium text-white">The Web3 Wizard</p>
-                  <p className="text-xs text-gray-500">Operator of Write3</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <MapPin className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                <div>
-                  <p className="text-sm text-gray-300">251 Little Falls Drive</p>
-                  <p className="text-xs text-gray-500">Wilmington, DE 19808, United States</p>
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <Mail className="h-4 w-4 text-gray-500 flex-shrink-0" />
-                <div>
-                  <p className="text-sm text-gray-300">support@write3.io</p>
-                  <p className="text-xs text-gray-500">For support inquiries</p>
-                </div>
-              </div>
-            </div>
+            <h2 className="text-lg font-semibold text-white mb-3">Contact</h2>
+            <p>
+              Write3 is currently in active development. If you have questions, feedback, or need support, 
+              you can reach us via the <Link href="/auth/login" className="text-electric-indigo hover:underline">dashboard</Link> 
+              or open an issue on our project repository. We aim to respond to all inquiries within 24 hours.
+            </p>
           </section>
 
           <section>
@@ -98,18 +80,8 @@ export default function AboutPage() {
             <p>
               If you encounter content generated through Write3 that violates our Terms of Service or Acceptable Use 
               Policy — including deepfakes, impersonation, fraud, hate speech, or any prohibited content — please 
-              report it immediately to <strong className="text-white">abuse@write3.io</strong>. We investigate all 
+              report it through the dashboard or contact us directly. We investigate all 
               reports and take appropriate action, including account termination for verified violations.
-            </p>
-          </section>
-
-          <section>
-            <h2 className="text-lg font-semibold text-white mb-3">Contact Us</h2>
-            <p>
-              For general inquiries: <strong className="text-white">hello@write3.io</strong><br />
-              For support: <strong className="text-white">support@write3.io</strong><br />
-              For legal matters: <strong className="text-white">legal@write3.io</strong><br />
-              To report abuse: <strong className="text-white">abuse@write3.io</strong>
             </p>
           </section>
         </div>
