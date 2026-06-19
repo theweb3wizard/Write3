@@ -70,7 +70,7 @@ export default function LandingPage() {
         {/* Navigation */}
         <header className="border-b border-card-border bg-card/20 backdrop-blur-md sticky top-0 z-30">
           <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-            <span className="text-xl font-bold text-white">Write3</span>
+            <span className="text-xl font-bold text-white inline-flex items-center gap-2">Write3<span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-warning/10 text-warning border border-warning/20">Beta</span></span>
             <div className="flex items-center gap-4">
               <Link href="/auth/login" className="text-sm text-gray-400 hover:text-white transition">Sign In</Link>
               <Link href="/auth/login" className="inline-flex items-center gap-2 rounded-lg bg-gradient-premium px-4 py-2 text-sm font-semibold text-white hover:opacity-90 transition-opacity">

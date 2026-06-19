@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
 import { useState } from "react";
-import Logo from "@/components/ui/Logo";
 
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -44,8 +43,8 @@ export default function Sidebar() {
         flex flex-col
       `}>
         <div className="p-5 border-b border-card-border">
-          <Link href="/dashboard">
-            <Logo />
+          <Link href="/dashboard" className="text-xl font-bold text-white inline-flex items-center gap-2">
+            Write3<span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-warning/10 text-warning border border-warning/20">Beta</span>
           </Link>
         </div>
 

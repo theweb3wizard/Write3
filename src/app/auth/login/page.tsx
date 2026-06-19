@@ -15,8 +15,9 @@ export default function LoginPage() {
           <div className="flex items-center justify-center h-12 w-12 rounded-xl bg-gradient-premium shadow-lg shadow-electric-indigo/25 glow-indigo text-white">
             <Sparkles className="h-6 w-6" />
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white mt-4">
+          <h1 className="text-3xl font-extrabold tracking-tight text-white mt-4 inline-flex items-center gap-3">
             Write<span className="text-gradient">3</span>
+            <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-warning/10 text-warning border border-warning/20">Beta</span>
           </h1>
           <p className="text-sm text-gray-400 max-w-xs">
             Generate contextually aware, high-impact Web3 content in seconds.
