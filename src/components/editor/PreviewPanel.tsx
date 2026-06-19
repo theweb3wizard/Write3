@@ -1,8 +1,11 @@
 "use client";
 
-import { useState } from "react";
-import { Copy, Check, RefreshCw, ExternalLink } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Copy, Check, RefreshCw, ExternalLink, MessageCircle, AlertTriangle } from "lucide-react";
 import { toast } from "sonner";
+import { createClient } from "@/lib/supabase/client";
+import { useUserStore } from "@/stores/userStore";
+import { checkCompliance } from "@/lib/ai/compliance";
 
 interface PreviewPanelProps {
   title: string;
@@ -22,7 +25,23 @@ interface PreviewPanelProps {
 export default function PreviewPanel({
   title, body, platform, metadata, loading, error, onRegenerate, contentId,
 }: PreviewPanelProps) {
+  const { user } = useUserStore();
   const [copied, setCopied] = useState(false);
+  const [publishing, setPublishing] = useState(false);
+  const [discordConnected, setDiscordConnected] = useState(false);
+
+  const complianceWarnings = body ? checkCompliance(`${title} ${body}`) : null;
+
+  useEffect(() => {
+    if (!user) return;
+    const supabase = createClient();
+    supabase.from("user_social_accounts").select("platform, is_connected").eq("user_id", user.id).then(({ data }) => {
+      if (!data) return;
+      data.forEach((a) => {
+        if (a.platform === "discord") setDiscordConnected(a.is_connected);
+      });
+    });
+  }, [user]);
 
   const handleCopy = async () => {
     try {
@@ -33,6 +52,24 @@ export default function PreviewPanel({
     } catch {
       toast.error("Failed to copy");
     }
+  };
+
+  const handlePublishDiscord = async () => {
+    if (!contentId) return;
+    setPublishing(true);
+    try {
+      const res = await fetch("/api/publish/discord", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content_id: contentId }),
+      });
+      const json = await res.json();
+      if (!res.ok) throw new Error(json.error);
+      toast.success("Posted to Discord!");
+    } catch (err: any) {
+      toast.error(err.message);
+    }
+    setPublishing(false);
   };
 
   const formatBody = (text: string, plat: string) => {
@@ -157,6 +194,34 @@ export default function PreviewPanel({
           ))}
         </div>
       )}
+
+      {complianceWarnings && !complianceWarnings.safe && (
+        <div className="mx-4 mb-4 p-3 rounded-lg bg-warning/5 border border-warning/20">
+          <div className="flex items-start gap-2">
+            <AlertTriangle className="h-4 w-4 text-warning flex-shrink-0 mt-0.5" />
+            <div>
+              <p className="text-xs font-medium text-warning mb-1">Compliance Warnings</p>
+              <ul className="text-xs text-gray-400 space-y-0.5">
+                {complianceWarnings.warnings.map((w, i) => (
+                  <li key={i}>- &quot;{w}&quot; detected in content</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="px-4 pb-4 flex gap-2 border-t border-card-border pt-4">
+        <button
+          onClick={handlePublishDiscord}
+          disabled={!discordConnected || !contentId || publishing}
+          className="flex items-center gap-1.5 px-3 py-2 rounded-lg text-xs font-medium transition cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed bg-neon-cyan/10 text-neon-cyan border border-neon-cyan/20 hover:bg-neon-cyan/20"
+          title={!discordConnected ? "Set up Discord webhook in Settings" : "Post to Discord"}
+        >
+          <MessageCircle className="h-3.5 w-3.5" />
+          {publishing ? "Posting..." : "Post to Discord"}
+        </button>
+      </div>
     </div>
   );
 }

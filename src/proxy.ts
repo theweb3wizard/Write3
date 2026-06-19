@@ -32,17 +32,15 @@ export async function proxy(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const path = request.nextUrl.pathname;
-  
-  // Protect authenticated application routes
+
   const isProtectedRoute =
     path.startsWith("/dashboard") ||
     path.startsWith("/library") ||
     path.startsWith("/projects") ||
     path.startsWith("/voice-training") ||
     path.startsWith("/settings") ||
-    path.startsWith("/analytics") ||
-    (path.startsWith("/api") && 
-     !path.startsWith("/api/paddle/webhook") && 
+    path.startsWith("/generate") ||
+     (path.startsWith("/api") && 
      !path.startsWith("/api/auth/callback"));
 
   const isAuthRoute = path.startsWith("/auth");
@@ -65,13 +63,6 @@ export async function proxy(request: NextRequest) {
 
 export const config = {
   matcher: [
-    /*
-     * Match all request paths except for the ones starting with:
-     * - _next/static (static files)
-     * - _next/image (image optimization files)
-     * - favicon.ico (favicon file)
-     * - svg, png, jpg, jpeg, gif, webp images
-     */
     "/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)",
   ],
 };

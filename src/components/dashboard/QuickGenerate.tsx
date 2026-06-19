@@ -40,7 +40,7 @@ export default function QuickGenerate() {
           {loading ? (
             <div className="h-9 bg-card-border rounded animate-pulse" />
           ) : projects.length === 0 ? (
-            <Link href="/projects" className="text-xs text-electric-indigo hover:underline">
+            <Link href="/generate" className="text-xs text-electric-indigo hover:underline">
               Create your first project
             </Link>
           ) : (

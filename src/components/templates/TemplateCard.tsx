@@ -19,6 +19,7 @@ const platformColors: Record<string, string> = {
   twitter: "bg-info/10 text-info border-info/20",
   discord: "bg-electric-indigo/10 text-electric-indigo border-electric-indigo/20",
   telegram: "bg-info/10 text-info border-info/20",
+  reddit: "bg-orange-500/10 text-orange-400 border-orange-500/20",
   blog: "bg-warning/10 text-warning border-warning/20",
   newsletter: "bg-success/10 text-success border-success/20",
   farcaster: "bg-neon-cyan/10 text-neon-cyan border-neon-cyan/20",

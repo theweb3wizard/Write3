@@ -9,6 +9,7 @@ interface ChatCompletionOptions {
   temperature?: number;
   response_format?: { type: "json_object" } | { type: "text" };
   max_tokens?: number;
+  apiKey?: string;
   provider?: {
     order?: string[];
     allow_fallbacks?: boolean;
@@ -31,18 +32,17 @@ interface ChatCompletionResponse {
 
 const OPENROUTER_BASE = "https://openrouter.ai/api/v1";
 
-function getApiKey(): string {
-  const key = process.env.OPENROUTER_API_KEY;
-  if (!key) {
-    throw new Error("Missing OPENROUTER_API_KEY environment variable");
-  }
-  return key;
+function resolveApiKey(key?: string): string {
+  if (key) return key;
+  const fallback = process.env.OPENROUTER_API_KEY;
+  if (!fallback) throw new Error("No API key available");
+  return fallback;
 }
 
 export async function generateChatCompletion(
   options: ChatCompletionOptions
 ): Promise<ChatCompletionResponse> {
-  const apiKey = getApiKey();
+  const apiKey = resolveApiKey(options.apiKey);
 
   const body: Record<string, unknown> = {
     model: options.model,

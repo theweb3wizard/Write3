@@ -22,6 +22,7 @@ const platformOptions = [
   { value: "twitter", label: "Twitter/X" },
   { value: "discord", label: "Discord" },
   { value: "telegram", label: "Telegram" },
+  { value: "reddit", label: "Reddit" },
   { value: "blog", label: "Blog" },
   { value: "newsletter", label: "Newsletter" },
   { value: "farcaster", label: "Farcaster" },

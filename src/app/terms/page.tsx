@@ -44,12 +44,12 @@ export default function TermsPage() {
           </section>
 
           <section>
-            <h2 className="text-lg font-semibold text-white mb-3">4. Subscriptions & Billing</h2>
-            <p className="mb-3">Write3 offers free and paid subscription tiers:</p>
+            <h2 className="text-lg font-semibold text-white mb-3">4. Credits & Billing</h2>
+            <p className="mb-3">Write3 offers free usage and prepaid credit packs:</p>
             <ul className="list-disc pl-5 space-y-2">
-              <li><strong className="text-white">Free Tier:</strong> Limited to 50 content generations per month with basic features and watermark.</li>
-              <li><strong className="text-white">Paid Tiers:</strong> Creator ($29/mo), Pro ($69/mo), and Agency ($199/mo). Each tier provides additional features as described on the Pricing page.</li>
-              <li>All payments are processed by Paddle. Subscriptions auto-renew unless canceled. Refund requests are handled per Paddle's refund policy.</li>
+              <li><strong className="text-white">Free Tier:</strong> Limited to 25 content generations per month.</li>
+              <li><strong className="text-white">Credit Packs:</strong> Purchase credits in packs of 100 ($10 USDC), 500 ($35 USDC). Credits never expire.</li>
+              <li>Payments are processed by NowPayments via USDC on the Solana blockchain. Credit is added immediately upon payment confirmation.</li>
               <li>We reserve the right to change pricing with 30 days notice.</li>
             </ul>
           </section>
@@ -63,7 +63,7 @@ export default function TermsPage() {
               <li>Generate hate speech, harassment, discriminatory content, or content promoting violence</li>
               <li>Produce content that violates intellectual property rights, including unauthorized use of copyrighted material</li>
               <li>Create content intended to manipulate financial markets, token prices, or NFT valuations through false or misleading information</li>
-              <li>Generate spam, unsolicited bulk messages, or content that violates Paddle's Acceptable Use Policy</li>
+              <li>Generate spam, unsolicited bulk messages, or content that violates applicable laws</li>
               <li>Attempt to reverse-engineer, bypass rate limits, or abuse the API in unauthorized ways</li>
               <li>Use the Service to train competing AI models or extract training data</li>
               <li>Share accounts across multiple organizations (each organization requires its own subscription)</li>

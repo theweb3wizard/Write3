@@ -1,4 +1,5 @@
 -- Enable uuid-ossp extension
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- 1. USERS TABLE
@@ -7,10 +8,10 @@ CREATE TABLE public.users (
   email varchar(255) UNIQUE NOT NULL,
   username varchar(50) UNIQUE,
   avatar_url text,
-  wallet_address varchar(42),
-  subscription_tier varchar(20) DEFAULT 'free' CHECK (subscription_tier IN ('free', 'creator', 'pro', 'agency')),
-  monthly_generation_count int DEFAULT 0,
-  generations_reset_at timestamptz,
+  credit_balance int DEFAULT 0,
+  free_generations_used int DEFAULT 0,
+  free_generations_reset_at timestamptz DEFAULT now(),
+  total_generations int DEFAULT 0,
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now()
 );
@@ -49,7 +50,29 @@ CREATE POLICY "Users can manage own projects"
 ON public.projects FOR ALL 
 USING (auth.uid() = user_id);
 
--- 3. VOICE_PROFILES TABLE
+-- 3. SOCIAL ACCOUNTS TABLE
+CREATE TABLE public.user_social_accounts (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
+  platform varchar(20) NOT NULL CHECK (platform IN ('discord')),
+  access_token text,
+  refresh_token text,
+  token_expires_at timestamptz,
+  discord_webhook_url text,
+  handle varchar(100),
+  twitter_id varchar(100),
+  is_connected boolean DEFAULT false,
+  created_at timestamptz DEFAULT now(),
+  UNIQUE(user_id, platform)
+);
+
+ALTER TABLE public.user_social_accounts ENABLE ROW LEVEL SECURITY;
+
+CREATE POLICY "Users can manage own social accounts"
+ON public.user_social_accounts FOR ALL
+USING (auth.uid() = user_id);
+
+-- 4. VOICE_PROFILES TABLE
 CREATE TABLE public.voice_profiles (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
@@ -85,7 +108,7 @@ CREATE TABLE public.templates (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   name varchar(100) NOT NULL,
   description text,
-  platform varchar(20) NOT NULL CHECK (platform IN ('twitter', 'discord', 'telegram', 'blog', 'newsletter', 'farcaster')),
+  platform varchar(20) NOT NULL CHECK (platform IN ('twitter', 'discord', 'telegram', 'blog', 'newsletter', 'farcaster', 'reddit')),
   content_type varchar(50) NOT NULL,
   category varchar(50) NOT NULL,
   default_prompt text NOT NULL,
@@ -110,7 +133,7 @@ CREATE TABLE public.content_pieces (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   project_id uuid NOT NULL REFERENCES public.projects(id) ON DELETE CASCADE,
   template_id uuid REFERENCES public.templates(id) ON DELETE SET NULL,
-  platform varchar(20) NOT NULL CHECK (platform IN ('twitter', 'discord', 'telegram', 'blog', 'newsletter', 'farcaster')),
+  platform varchar(20) NOT NULL CHECK (platform IN ('twitter', 'discord', 'telegram', 'blog', 'newsletter', 'farcaster', 'reddit')),
   content_type varchar(50) NOT NULL,
   title varchar(200),
   body text NOT NULL,
@@ -134,70 +157,42 @@ USING (
   )
 );
 
--- 6. USAGE_LOGS TABLE
-CREATE TABLE public.usage_logs (
+-- 6. PAYMENTS TABLE
+CREATE TABLE public.payments (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid NOT NULL REFERENCES public.users(id) ON DELETE CASCADE,
-  action_type varchar(50) NOT NULL CHECK (action_type IN ('generate', 'edit', 'export', 'voice_train')),
-  resource_type varchar(50),
-  resource_id uuid,
-  tokens_used int DEFAULT 0,
-  metadata jsonb DEFAULT '{}'::jsonb,
-  created_at timestamptz DEFAULT now()
-);
-
--- Enable RLS on usage_logs
-ALTER TABLE public.usage_logs ENABLE ROW LEVEL SECURITY;
-
--- Usage logs RLS policies
-CREATE POLICY "Users can view own usage" 
-ON public.usage_logs FOR SELECT 
-USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can insert own usage" 
-ON public.usage_logs FOR INSERT 
-WITH CHECK (auth.uid() = user_id);
-
--- 7. SUBSCRIPTIONS TABLE (Paddle Integrations)
-CREATE TABLE public.subscriptions (
-  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  user_id uuid NOT NULL UNIQUE REFERENCES public.users(id) ON DELETE CASCADE,
-  paddle_subscription_id varchar(100) UNIQUE,
-  paddle_customer_id varchar(100),
-  plan_type varchar(20) NOT NULL CHECK (plan_type IN ('free', 'creator', 'pro', 'agency')),
-  status varchar(20) NOT NULL CHECK (status IN ('active', 'trialing', 'past_due', 'paused', 'deleted')),
-  current_period_start timestamptz,
-  current_period_end timestamptz,
-  cancel_at timestamptz,
+  nowpayments_id varchar(100),
+  tx_hash varchar(100),
+  amount_usd numeric(10,2) NOT NULL,
+  credits_purchased int NOT NULL,
+  currency varchar(10) DEFAULT 'usdc',
+  network varchar(20) DEFAULT 'solana',
+  status varchar(20) NOT NULL DEFAULT 'pending',
   created_at timestamptz DEFAULT now(),
-  updated_at timestamptz DEFAULT now()
+  UNIQUE(nowpayments_id)
 );
 
--- Enable RLS on subscriptions
-ALTER TABLE public.subscriptions ENABLE ROW LEVEL SECURITY;
+-- Enable RLS on payments
+ALTER TABLE public.payments ENABLE ROW LEVEL SECURITY;
 
--- Subscriptions RLS policies
-CREATE POLICY "Users can view own subscription" 
-ON public.subscriptions FOR SELECT 
+-- Payments RLS policies
+CREATE POLICY "Users can view own payments" 
+ON public.payments FOR SELECT 
 USING (auth.uid() = user_id);
 
--- 8. USER SYNC TRIGGER
+-- 7. USER SYNC TRIGGER
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.users (id, email, username, avatar_url, subscription_tier, monthly_generation_count)
+  INSERT INTO public.users (id, email, username, avatar_url, credit_balance, free_generations_used)
   VALUES (
     new.id,
     new.email,
     COALESCE(new.raw_user_meta_data->>'user_name', new.raw_user_meta_data->>'preferred_username', split_part(new.email, '@', 1)),
     new.raw_user_meta_data->>'avatar_url',
-    'free',
+    0,
     0
   );
-  
-  -- Create initial subscription record
-  INSERT INTO public.subscriptions (user_id, plan_type, status)
-  VALUES (new.id, 'free', 'active');
   
   RETURN NEW;
 END;
@@ -207,13 +202,57 @@ CREATE OR REPLACE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
--- 9. PERFORMANCE INDEXES
+-- 8. ADD CREDITS FUNCTION
+CREATE OR REPLACE FUNCTION public.add_credits(user_id uuid, amount int)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.users
+  SET credit_balance = credit_balance + amount,
+      updated_at = now()
+  WHERE id = user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 9. DEDUCT CREDIT FUNCTION
+CREATE OR REPLACE FUNCTION public.deduct_credit(user_id uuid)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.users
+  SET credit_balance = credit_balance - 1,
+      total_generations = total_generations + 1,
+      updated_at = now()
+  WHERE id = user_id AND credit_balance > 0;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 10. INCREMENT FREE USAGE FUNCTION
+CREATE OR REPLACE FUNCTION public.increment_free_usage(user_id uuid)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.users
+  SET free_generations_used = free_generations_used + 1,
+      total_generations = total_generations + 1,
+      updated_at = now()
+  WHERE id = user_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 11. PUBLISH CONTENT FUNCTION
+CREATE OR REPLACE FUNCTION public.publish_content(content_id uuid)
+RETURNS void AS $$
+BEGIN
+  UPDATE public.content_pieces
+  SET status = 'published',
+      updated_at = now()
+  WHERE id = content_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- 12. PERFORMANCE INDEXES
 CREATE INDEX idx_projects_user_id ON public.projects(user_id);
 CREATE INDEX idx_voice_profiles_project_id ON public.voice_profiles(project_id);
 CREATE INDEX idx_content_pieces_project_id ON public.content_pieces(project_id);
 CREATE INDEX idx_content_pieces_created_at ON public.content_pieces(created_at DESC);
 CREATE INDEX idx_content_pieces_status ON public.content_pieces(status);
-CREATE INDEX idx_usage_logs_user_id ON public.usage_logs(user_id);
-CREATE INDEX idx_usage_logs_created_at ON public.usage_logs(created_at DESC);
 CREATE INDEX idx_templates_platform ON public.templates(platform);
 CREATE INDEX idx_templates_category ON public.templates(category);

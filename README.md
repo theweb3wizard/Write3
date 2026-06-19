@@ -72,9 +72,9 @@ src/
 ├── hooks/                  # React hooks (useSubscription)
 ├── lib/
 │   ├── ai/                 # OpenRouter client + model registry + content gen
-│   ├── paddle/             # Paddle browser SDK client
+│   ├── payments/           # Payment route handlers
 │   ├── seo/                # Metadata config
-│   ├── subscription/       # Tier guards, generation limits
+│   ├── subscription/       # Credit guards, generation checks
 │   ├── supabase/           # Client/server/admin Supabase clients
 │   └── utils/              # URL resolution, etc.
 └── stores/                 # Zustand store (user profile)
@@ -88,11 +88,8 @@ src/
 | `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase project URL |
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase anonymous key |
 | `SUPABASE_SERVICE_ROLE_KEY` | Yes | Supabase service role key (admin) |
-| `UPSTASH_REDIS_REST_URL` | No* | Rate limiting (dev bypass if missing) |
-| `UPSTASH_REDIS_REST_TOKEN` | No* | Rate limiting |
-| `NEXT_PUBLIC_PADDLE_CLIENT_TOKEN` | No* | Paddle checkout UI |
-| `PADDLE_WEBHOOK_SECRET` | No* | Paddle webhook verification |
-| `PADDLE_PRICE_CREATOR/PRO/AGENCY` | No* | Price IDs for subscription plans |
+| `NOWPAYMENTS_API_KEY` | No* | Crypto payment creation |
+| `NOWPAYMENTS_IPN_SECRET` | No* | Webhook signature verification |
 | `NEXT_PUBLIC_APP_URL` | No | Canonical URL (auto-detected on Vercel) |
 
 \* Optional for development; required in production for feature to work.

@@ -3,11 +3,11 @@ import type { Metadata } from "next";
 export const metadata: Metadata = {
   title: "Pricing",
   description:
-    "Start for free, no credit card required. Upgrade to Creator ($29/mo), Pro ($69/mo), or Agency ($199/mo). Unlimited content generation, brand style profiles, and team access.",
+    "Start for free, no credit card required. Buy prepaid credits with USDC on Solana. Starter ($10 for 100 credits), Creator ($35 for 500 credits). Credits never expire.",
   openGraph: {
-    title: "Write3 Pricing — Simple Pricing, Unlimited Content",
+    title: "Write3 Pricing — Pay Once. Create Forever.",
     description:
-      "Start free, no credit card required. Upgrade when you need more power, more profiles, and more control over your Web3 content.",
+      "Start free, no credit card required. Buy prepaid credits with USDC on Solana. Credits never expire.",
   },
 };
 

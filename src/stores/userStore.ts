@@ -6,10 +6,10 @@ export interface UserProfile {
   email: string;
   username: string | null;
   avatar_url: string | null;
-  wallet_address: string | null;
-  subscription_tier: "free" | "creator" | "pro" | "agency";
-  monthly_generation_count: number;
-  generations_reset_at: string | null;
+  credit_balance: number;
+  free_generations_used: number;
+  free_generations_reset_at: string;
+  total_generations: number;
   created_at: string;
   updated_at: string;
 }

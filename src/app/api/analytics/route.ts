@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { isDegradationCached } from "@/lib/ai/router";
 
 export async function GET() {
   try {
@@ -9,102 +11,124 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const thirtyDaysAgo = new Date();
-    thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
-
-    const projectIdsQuery = await supabase
+    const { data: projectIds } = await supabase
       .from("projects")
       .select("id")
       .eq("user_id", user.id);
-    const projectIds = projectIdsQuery.data?.map(p => p.id) || [];
 
-    if (projectIds.length === 0) {
+    if (!projectIds || projectIds.length === 0) {
       return NextResponse.json({
         success: true,
         data: {
+          total_generated: 0,
+          by_platform: {},
+          recent_days: [],
+          credit_balance: 0,
+          free_remaining: 25,
           total_generations: 0,
-          platform_breakdown: [],
-          type_breakdown: [],
-          daily_counts: [],
-          top_templates: [],
-          token_usage: 0,
-          recent_generations: 0,
         },
       });
     }
 
-    const [contentResult, logsResult, userResult] = await Promise.all([
-      supabase
-        .from("content_pieces")
-        .select("id, platform, content_type, tokens_used, template_id, created_at, projects!inner(name)")
-        .in("project_id", projectIds)
-        .gte("created_at", thirtyDaysAgo.toISOString())
-        .order("created_at", { ascending: false }),
+    const ids = projectIds.map(p => p.id);
 
-      supabase
-        .from("usage_logs")
-        .select("tokens_used, action_type, created_at")
-        .eq("user_id", user.id)
-        .gte("created_at", thirtyDaysAgo.toISOString()),
+    const { data: userProfile } = await supabase
+      .from("users")
+      .select("credit_balance, free_generations_used, total_generations")
+      .eq("id", user.id)
+      .single();
 
-      supabase
-        .from("users")
-        .select("subscription_tier, monthly_generation_count, generations_reset_at")
-        .eq("id", user.id)
-        .single(),
-    ]);
+    const { data: contentCounts } = await supabase
+      .from("content_pieces")
+      .select("platform, created_at")
+      .in("project_id", ids);
 
-    const content = contentResult.data || [];
-    const logs = logsResult.data || [];
+    const total_generated = contentCounts?.length || 0;
+    const by_platform: Record<string, number> = {};
+    const by_day: Record<string, number> = {};
 
-    const platformBreakdown = content.reduce((acc: Record<string, number>, c) => {
-      acc[c.platform] = (acc[c.platform] || 0) + 1;
-      return acc;
-    }, {});
-
-    const typeBreakdown = content.reduce((acc: Record<string, number>, c) => {
-      acc[c.content_type] = (acc[c.content_type] || 0) + 1;
-      return acc;
-    }, {});
-
-    const dailyCounts: Record<string, number> = {};
-    for (let i = 29; i >= 0; i--) {
-      const d = new Date();
-      d.setDate(d.getDate() - i);
-      dailyCounts[d.toISOString().split("T")[0]] = 0;
-    }
-    content.forEach(c => {
-      const day = new Date(c.created_at).toISOString().split("T")[0];
-      if (dailyCounts[day] !== undefined) dailyCounts[day]++;
+    contentCounts?.forEach(c => {
+      by_platform[c.platform] = (by_platform[c.platform] || 0) + 1;
+      const day = new Date(c.created_at).toISOString().slice(0, 10);
+      by_day[day] = (by_day[day] || 0) + 1;
     });
 
-    const templateCounts: Record<string, { name: string; count: number }> = {};
-    content.forEach(c => {
-      const key = c.template_id || "unknown";
-      if (!templateCounts[key]) {
-        templateCounts[key] = { name: (c as any).projects?.name || "Untitled", count: 0 };
-      }
-      templateCounts[key].count++;
-    });
+    const recent_days = Object.entries(by_day)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .slice(-30)
+      .map(([date, count]) => ({ date, count }));
 
-    const totalTokens = logs.reduce((sum, l) => sum + (l.tokens_used || 0), 0);
-    const recentCount = content.length;
+    const credit_balance = userProfile?.credit_balance ?? 0;
+    const free_remaining = Math.max(0, 25 - (userProfile?.free_generations_used ?? 0));
+    const total_generations = userProfile?.total_generations ?? 0;
 
     return NextResponse.json({
       success: true,
       data: {
-        total_generations: content.length,
-        platform_breakdown: Object.entries(platformBreakdown).map(([name, value]) => ({ name, value })),
-        type_breakdown: Object.entries(typeBreakdown).map(([name, value]) => ({ name, value })),
-        daily_counts: Object.entries(dailyCounts).map(([date, count]) => ({ date, count })),
-        top_templates: Object.values(templateCounts).sort((a, b) => b.count - a.count).slice(0, 10),
-        token_usage: totalTokens,
-        recent_generations: recentCount,
-        subscription: userResult.data,
+        total_generated,
+        by_platform,
+        recent_days,
+        credit_balance,
+        free_remaining,
+        total_generations,
       },
     });
   } catch (err: any) {
     console.error("Analytics error:", err);
     return NextResponse.json({ error: "Failed to fetch analytics" }, { status: 500 });
+  }
+}
+
+// Admin-only: system health overview
+export async function POST() {
+  try {
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+
+    const isAdmin = process.env.ADMIN_USER_IDS?.split(",").includes(user.id);
+    if (!isAdmin) return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+
+    const admin = createAdminClient();
+
+    const { count: totalUsers } = await admin
+      .from("users")
+      .select("*", { count: "exact", head: true });
+
+    const { count: totalGenerations } = await admin
+      .from("content_pieces")
+      .select("*", { count: "exact", head: true });
+
+    const { count: totalProjects } = await admin
+      .from("projects")
+      .select("*", { count: "exact", head: true });
+
+    let premiumBalance = 0;
+    try {
+      const key = process.env.OPENROUTER_API_KEY;
+      if (key) {
+        const res = await fetch("https://openrouter.ai/api/v1/auth/key", {
+          headers: { Authorization: `Bearer ${key}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          premiumBalance = data?.data?.credits ?? 0;
+        }
+      }
+    } catch {}
+
+    return NextResponse.json({
+      success: true,
+      data: {
+        total_users: totalUsers ?? 0,
+        total_generations: totalGenerations ?? 0,
+        total_projects: totalProjects ?? 0,
+        premium_api_balance: premiumBalance,
+        degradation_mode: isDegradationCached(),
+      },
+    });
+  } catch (err: any) {
+    console.error("Admin analytics error:", err);
+    return NextResponse.json({ error: "Failed" }, { status: 500 });
   }
 }

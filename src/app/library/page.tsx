@@ -2,16 +2,19 @@
 
 import { useState, useEffect, useCallback } from "react";
 import AppShell from "@/components/layout/AppShell";
-import { Search, Grid3X3, List, AtSign, MessageCircle, Send, Newspaper, BookOpen, Copy, Check, Trash2, ExternalLink, FileText } from "lucide-react";
+import { Search, Grid3X3, List, AtSign, MessageCircle, Send, Newspaper, BookOpen, Copy, Check, Trash2, FileText, RefreshCw, X, ExternalLink } from "lucide-react";
 import { toast } from "sonner";
+import Link from "next/link";
 
 const platformIcons: Record<string, any> = {
-  twitter: AtSign, discord: MessageCircle, telegram: Send, blog: Newspaper, newsletter: BookOpen, farcaster: MessageCircle,
+  twitter: AtSign, discord: MessageCircle, telegram: Send, reddit: MessageCircle,
+  blog: Newspaper, newsletter: BookOpen, farcaster: MessageCircle,
 };
 
 const platformColors: Record<string, string> = {
   twitter: "text-info", discord: "text-electric-indigo", telegram: "text-info",
-  blog: "text-warning", newsletter: "text-success", farcaster: "text-neon-cyan",
+  reddit: "text-orange-400", blog: "text-warning", newsletter: "text-success",
+  farcaster: "text-neon-cyan",
 };
 
 export default function LibraryPage() {
@@ -24,29 +27,37 @@ export default function LibraryPage() {
   const [view, setView] = useState<"grid" | "list">("grid");
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const [refreshKey, setRefreshKey] = useState(0);
   const [copiedId, setCopiedId] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<any | null>(null);
+  const [remixing, setRemixing] = useState<string | null>(null);
 
-  const fetchContent = useCallback(async () => {
+  const refetch = useCallback(() => setRefreshKey(k => k + 1), []);
+
+  useEffect(() => {
+    let cancelled = false;
     setLoading(true);
     const params = new URLSearchParams({ page: page.toString(), sort });
     if (platform) params.set("platform", platform);
     if (statusFilter) params.set("status", statusFilter);
     if (search) params.set("search", search);
 
-    try {
-      const res = await fetch(`/api/content?${params}`);
-      const json = await res.json();
-      if (json.success) {
-        setContent(json.data);
-        setTotalPages(json.pagination?.totalPages || 1);
-      }
-    } catch (err) {
-      console.error("Failed to fetch content:", err);
-    }
-    setLoading(false);
-  }, [page, sort, platform, statusFilter, search]);
+    fetch(`/api/content?${params}`)
+      .then(res => res.json())
+      .then(json => {
+        if (cancelled) return;
+        if (json.success) {
+          setContent(json.data);
+          setTotalPages(json.pagination?.totalPages || 1);
+          setTotalItems(json.pagination?.total || 0);
+        }
+      })
+      .catch(err => console.error("Failed to fetch content:", err))
+      .finally(() => { if (!cancelled) setLoading(false); });
 
-  useEffect(() => { fetchContent(); }, [fetchContent]);
+    return () => { cancelled = true; };
+  }, [page, sort, platform, statusFilter, search, refreshKey]);
 
   const handleCopy = async (id: string, body: string) => {
     try {
@@ -65,7 +76,8 @@ export default function LibraryPage() {
       const res = await fetch(`/api/content?id=${id}`, { method: "DELETE" });
       if (res.ok) {
         toast.success("Content deleted");
-        fetchContent();
+        if (selectedItem?.id === id) setSelectedItem(null);
+        refetch();
       }
     } catch {
       toast.error("Failed to delete");
@@ -81,11 +93,35 @@ export default function LibraryPage() {
       });
       if (res.ok) {
         toast.success(`Status updated to ${status}`);
-        fetchContent();
+        refetch();
       }
     } catch {
       toast.error("Failed to update status");
     }
+  };
+
+  const handleRemix = async (id: string) => {
+    setRemixing(id);
+    try {
+      const res = await fetch(`/api/content?action=clone`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id }),
+      });
+      if (res.ok) {
+        toast.success("Content duplicated as draft. Edit it now.");
+        refetch();
+      }
+    } catch {
+      toast.error("Failed to remix");
+    } finally {
+      setRemixing(null);
+    }
+  };
+
+  const truncateBody = (text: string, max: number) => {
+    if (!text) return "";
+    return text.length > max ? text.slice(0, max) + "..." : text;
   };
 
   return (
@@ -94,18 +130,24 @@ export default function LibraryPage() {
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-white">Content Library</h1>
-            <p className="text-sm text-gray-500 mt-1">Browse, search, and manage all your generated content</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {totalItems > 0
+                ? `${totalItems} piece${totalItems !== 1 ? "s" : ""} of content`
+                : "Browse, search, and manage all your generated content"}
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <button
               onClick={() => setView("grid")}
               className={`p-2 rounded-lg border transition cursor-pointer ${view === "grid" ? "bg-electric-indigo/10 border-electric-indigo/20 text-electric-indigo" : "border-card-border text-gray-500 hover:text-white"}`}
+              title="Grid view"
             >
               <Grid3X3 className="h-4 w-4" />
             </button>
             <button
               onClick={() => setView("list")}
               className={`p-2 rounded-lg border transition cursor-pointer ${view === "list" ? "bg-electric-indigo/10 border-electric-indigo/20 text-electric-indigo" : "border-card-border text-gray-500 hover:text-white"}`}
+              title="List view"
             >
               <List className="h-4 w-4" />
             </button>
@@ -132,6 +174,7 @@ export default function LibraryPage() {
             <option value="twitter">Twitter</option>
             <option value="discord">Discord</option>
             <option value="telegram">Telegram</option>
+            <option value="reddit">Reddit</option>
             <option value="blog">Blog</option>
             <option value="newsletter">Newsletter</option>
             <option value="farcaster">Farcaster</option>
@@ -154,7 +197,7 @@ export default function LibraryPage() {
           >
             <option value="newest">Newest</option>
             <option value="oldest">Oldest</option>
-            <option value="title">Title</option>
+            <option value="title">Title A-Z</option>
           </select>
         </div>
 
@@ -195,13 +238,23 @@ export default function LibraryPage() {
                       {item.status}
                     </span>
                   </div>
-                  <h4 className="text-sm font-semibold text-white mb-1 truncate">{item.title || "Untitled"}</h4>
-                  <p className="text-xs text-gray-500 mb-3 line-clamp-2">{item.body?.slice(0, 150)}</p>
+                  <button onClick={() => setSelectedItem(item)} className="w-full text-left">
+                    <h4 className="text-sm font-semibold text-white mb-1 truncate hover:text-electric-indigo transition-colors">{item.title || "Untitled"}</h4>
+                    <p className="text-xs text-gray-500 mb-3 line-clamp-2">{truncateBody(item.body, 150)}</p>
+                  </button>
                   <div className="flex items-center justify-between pt-3 border-t border-card-border">
                     <span className="text-xs text-gray-600">{new Date(item.created_at).toLocaleDateString()}</span>
                     <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition">
                       <button onClick={() => handleCopy(item.id, item.body)} className="p-1 rounded text-gray-500 hover:text-white cursor-pointer" title="Copy">
                         {copiedId === item.id ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+                      </button>
+                      <button
+                        onClick={() => handleRemix(item.id)}
+                        disabled={remixing === item.id}
+                        className="p-1 rounded text-gray-500 hover:text-neon-cyan cursor-pointer disabled:opacity-50"
+                        title="Duplicate as draft"
+                      >
+                        <RefreshCw className={`h-3.5 w-3.5 ${remixing === item.id ? "animate-spin" : ""}`} />
                       </button>
                       <select
                         value={item.status}
@@ -232,10 +285,10 @@ export default function LibraryPage() {
                   <div className={`p-2 rounded-lg ${color} bg-card-border/30`}>
                     <Icon className="h-4 w-4" />
                   </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-white truncate">{item.title || "Untitled"}</p>
-                    <p className="text-xs text-gray-500 truncate">{item.body?.slice(0, 200)}</p>
-                  </div>
+                  <button onClick={() => setSelectedItem(item)} className="flex-1 min-w-0 text-left">
+                    <p className="text-sm font-medium text-white truncate hover:text-electric-indigo transition-colors">{item.title || "Untitled"}</p>
+                    <p className="text-xs text-gray-500 truncate">{truncateBody(item.body, 200)}</p>
+                  </button>
                   <span className={`text-xs px-2 py-0.5 rounded-full capitalize hidden sm:inline ${
                     item.status === "published" ? "bg-success/10 text-success" :
                     item.status === "scheduled" ? "bg-warning/10 text-warning" :
@@ -247,6 +300,14 @@ export default function LibraryPage() {
                   <div className="flex gap-1">
                     <button onClick={() => handleCopy(item.id, item.body)} className="p-1.5 rounded text-gray-500 hover:text-white hover:bg-card-border/30 transition cursor-pointer">
                       {copiedId === item.id ? <Check className="h-3.5 w-3.5 text-success" /> : <Copy className="h-3.5 w-3.5" />}
+                    </button>
+                    <button
+                      onClick={() => handleRemix(item.id)}
+                      disabled={remixing === item.id}
+                      className="p-1.5 rounded text-gray-500 hover:text-neon-cyan hover:bg-card-border/30 transition cursor-pointer disabled:opacity-50"
+                      title="Duplicate as draft"
+                    >
+                      <RefreshCw className={`h-3.5 w-3.5 ${remixing === item.id ? "animate-spin" : ""}`} />
                     </button>
                     <button onClick={() => handleDelete(item.id)} className="p-1.5 rounded text-gray-500 hover:text-error hover:bg-error/10 transition cursor-pointer">
                       <Trash2 className="h-3.5 w-3.5" />
@@ -267,7 +328,24 @@ export default function LibraryPage() {
             >
               Previous
             </button>
-            <span className="text-sm text-gray-500">Page {page} of {totalPages}</span>
+            {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
+              const start = Math.max(1, Math.min(page - 2, totalPages - 4));
+              const p = start + i;
+              if (p > totalPages) return null;
+              return (
+                <button
+                  key={p}
+                  onClick={() => setPage(p)}
+                  className={`px-3 py-1.5 rounded-lg text-sm border transition cursor-pointer ${
+                    p === page
+                      ? "bg-electric-indigo/10 border-electric-indigo/20 text-electric-indigo"
+                      : "border-card-border text-gray-500 hover:text-white"
+                  }`}
+                >
+                  {p}
+                </button>
+              );
+            })}
             <button
               onClick={() => setPage(p => Math.min(totalPages, p + 1))}
               disabled={page === totalPages}
@@ -278,6 +356,55 @@ export default function LibraryPage() {
           </div>
         )}
       </div>
+
+      {/* Detail Modal */}
+      {selectedItem && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm" onClick={() => setSelectedItem(null)}>
+          <div className="max-w-2xl w-full rounded-xl border border-card-border bg-card p-6 space-y-4 max-h-[80vh] overflow-y-auto" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <span className={`text-xs px-2 py-0.5 rounded-full capitalize ${
+                  selectedItem.status === "published" ? "bg-success/10 text-success" :
+                  selectedItem.status === "scheduled" ? "bg-warning/10 text-warning" :
+                  "bg-gray-500/10 text-gray-400"
+                }`}>{selectedItem.status}</span>
+                <span className="text-xs text-gray-500">{selectedItem.platform}</span>
+              </div>
+              <button onClick={() => setSelectedItem(null)} className="p-1 rounded text-gray-500 hover:text-white cursor-pointer">
+                <X className="h-4 w-4" />
+              </button>
+            </div>
+            <h2 className="text-lg font-semibold text-white">{selectedItem.title || "Untitled"}</h2>
+            <div className="rounded-lg bg-deep-space border border-card-border p-4">
+              <pre className="text-sm text-gray-300 whitespace-pre-wrap font-sans leading-relaxed">{selectedItem.body}</pre>
+            </div>
+            {selectedItem.metadata?.hashtags?.length > 0 && (
+              <div className="flex flex-wrap gap-1">
+                {selectedItem.metadata.hashtags.map((tag: string) => (
+                  <span key={tag} className="text-xs text-info">{tag}</span>
+                ))}
+              </div>
+            )}
+            <div className="flex items-center justify-between pt-3 border-t border-card-border">
+              <div className="text-xs text-gray-500 space-y-0.5">
+                <p>Model: {selectedItem.ai_model_used}</p>
+                <p>Tokens: {selectedItem.tokens_used}</p>
+                <p>{new Date(selectedItem.created_at).toLocaleString()}</p>
+              </div>
+              <div className="flex gap-2">
+                <button onClick={() => handleCopy(selectedItem.id, selectedItem.body)} className="flex items-center gap-1.5 rounded-lg border border-card-border px-3 py-1.5 text-xs text-gray-300 hover:text-white cursor-pointer transition">
+                  {copiedId === selectedItem.id ? <Check className="h-3 w-3 text-success" /> : <Copy className="h-3 w-3" />}
+                  Copy
+                </button>
+                <button onClick={() => { handleRemix(selectedItem.id); setSelectedItem(null); }} className="flex items-center gap-1.5 rounded-lg border border-card-border px-3 py-1.5 text-xs text-gray-300 hover:text-neon-cyan cursor-pointer transition">
+                  <RefreshCw className="h-3 w-3" />
+                  Remix
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </AppShell>
   );
 }

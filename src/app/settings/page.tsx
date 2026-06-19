@@ -1,8 +1,8 @@
 "use client";
 
 import ProfileSection from "@/components/settings/ProfileSection";
-import WalletConnect from "@/components/settings/WalletConnect";
 import SubscriptionSection from "@/components/settings/SubscriptionSection";
+import SocialAccountsSection from "@/components/settings/SocialAccountsSection";
 import Logo from "@/components/ui/Logo";
 import { ArrowLeft, Trash2, Loader2 } from "lucide-react";
 import Link from "next/link";
@@ -67,7 +67,7 @@ export default function SettingsPage() {
       <main className="max-w-4xl mx-auto px-4 mt-8 space-y-8">
         <ProfileSection />
         
-        <WalletConnect />
+        <SocialAccountsSection />
         
         <SubscriptionSection />
 

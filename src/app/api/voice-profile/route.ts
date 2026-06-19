@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { generateJsonCompletion } from "@/lib/ai/client";
-import { canUseBrandStyleAlignment, getMaxVoiceProfiles } from "@/lib/subscription/guards";
 import { z } from "zod";
 
 const CreateVoiceSchema = z.object({
@@ -57,27 +56,7 @@ export async function POST(request: Request) {
 
     const { project_id, name, training_data } = parsed.data;
 
-    const { data: userProfile } = await supabase
-      .from("users")
-      .select("subscription_tier")
-      .eq("id", user.id)
-      .single();
-
-    const tier = userProfile?.subscription_tier || "free";
-
-    if (!canUseBrandStyleAlignment(tier)) {
-      return NextResponse.json({ error: "Brand Style Alignment is not available on the Free plan. Upgrade to create style profiles." }, { status: 403 });
-    }
-
-    const { count } = await supabase
-      .from("voice_profiles")
-      .select("*", { count: "exact", head: true })
-      .eq("project_id", project_id);
-
-    const maxProfiles = getMaxVoiceProfiles(tier);
-    if ((count || 0) >= maxProfiles) {
-      return NextResponse.json({ error: `Voice profile limit reached (${maxProfiles}). Upgrade to create more profiles.` }, { status: 403 });
-    }
+    // Voice profiles are free for all users
 
     const { data: project } = await supabase
       .from("projects")
@@ -132,13 +111,6 @@ ${training_data.substring(0, 10000)}`,
       .single();
 
     if (error) throw error;
-
-    await supabase.from("usage_logs").insert({
-      user_id: user.id,
-      action_type: "voice_train",
-      resource_type: "voice_profile",
-      resource_id: profile.id,
-    });
 
     return NextResponse.json({ success: true, data: profile }, { status: 201 });
   } catch (err: any) {

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
-import { Shield, Sparkles, Building2, Mail } from "lucide-react";
+import { Shield, Sparkles, Building2 } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "About Us - Write3 AI",
@@ -53,7 +53,7 @@ export default function AboutPage() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3">
                 <Shield className="h-4 w-4 text-success flex-shrink-0 mt-0.5" />
-                <span><strong className="text-white">Ethical AI Use:</strong> We are committed to responsible AI development and prohibit the use of our platform for deepfakes, impersonation, fraudulent content, or any activity that violates our Terms of Service or Paddle&apos;s Acceptable Use Policy.</span>
+                <span><strong className="text-white">Ethical AI Use:</strong> We are committed to responsible AI development and prohibit the use of our platform for deepfakes, impersonation, fraudulent content, or any activity that violates our Terms of Service.</span>
               </li>
               <li className="flex items-start gap-3">
                 <Sparkles className="h-4 w-4 text-electric-indigo flex-shrink-0 mt-0.5" />

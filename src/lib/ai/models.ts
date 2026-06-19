@@ -3,106 +3,128 @@ export interface AIModel {
   name: string;
   provider: string;
   providerColor: string;
-  minTier: "free" | "creator" | "pro" | "agency";
   description: string;
   supportsJsonMode: boolean;
 }
 
-const TIER_ORDER: Record<string, number> = {
-  free: 0,
-  creator: 1,
-  pro: 2,
-  agency: 3,
-};
+export type ModelTier = "free" | "paid";
 
-export const AVAILABLE_MODELS: AIModel[] = [
+export interface ModelPoolEntry {
+  id: string;
+  name: string;
+  provider: string;
+  providerColor: string;
+  description: string;
+  supportsJsonMode: boolean;
+  tier: ModelTier;
+  costPerGen: number;
+}
+
+export const MODEL_POOL: ModelPoolEntry[] = [
+  {
+    id: "openrouter/free",
+    name: "OpenRouter Free",
+    provider: "OpenRouter",
+    providerColor: "text-gray-400",
+    description: "Free tier — best-effort quality, rate-limited",
+    supportsJsonMode: false,
+    tier: "free",
+    costPerGen: 0,
+  },
   {
     id: "~google/gemini-flash-latest",
     name: "Gemini Flash Latest",
     provider: "Google",
     providerColor: "text-blue-400",
-    minTier: "free",
     description: "Fast, cheap, great for short-form content",
     supportsJsonMode: true,
-  },
-  {
-    id: "openai/gpt-4o-mini",
-    name: "GPT-4o Mini",
-    provider: "OpenAI",
-    providerColor: "text-emerald-400",
-    minTier: "free",
-    description: "Lightweight, smart, good all-rounder",
-    supportsJsonMode: true,
+    tier: "free",
+    costPerGen: 0,
   },
   {
     id: "deepseek/deepseek-chat",
     name: "DeepSeek Chat",
     provider: "DeepSeek",
     providerColor: "text-yellow-400",
-    minTier: "free",
     description: "Very cheap, solid quality, great fallback",
     supportsJsonMode: true,
+    tier: "free",
+    costPerGen: 0.0003,
   },
   {
-    id: "google/gemini-2.5-pro-exp-03-25",
-    name: "Gemini 2.5 Pro",
-    provider: "Google",
-    providerColor: "text-blue-400",
-    minTier: "creator",
-    description: "Deep reasoning, long-form, analytical content",
+    id: "openai/gpt-4o-mini",
+    name: "GPT-4o Mini",
+    provider: "OpenAI",
+    providerColor: "text-emerald-400",
+    description: "Lightweight, smart, good all-rounder",
     supportsJsonMode: true,
+    tier: "paid",
+    costPerGen: 0.001,
   },
   {
     id: "anthropic/claude-sonnet-4",
     name: "Claude Sonnet 4",
     provider: "Anthropic",
     providerColor: "text-orange-400",
-    minTier: "pro",
     description: "Nuanced creative writing, best-in-class quality",
     supportsJsonMode: true,
+    tier: "paid",
+    costPerGen: 0.003,
+  },
+  {
+    id: "google/gemini-2.5-pro-exp-03-25",
+    name: "Gemini 2.5 Pro",
+    provider: "Google",
+    providerColor: "text-blue-400",
+    description: "Deep reasoning, long-form, analytical content",
+    supportsJsonMode: true,
+    tier: "paid",
+    costPerGen: 0.002,
   },
   {
     id: "openai/gpt-4o",
     name: "GPT-4o",
     provider: "OpenAI",
     providerColor: "text-emerald-400",
-    minTier: "pro",
     description: "Versatile, powerful, industry standard",
     supportsJsonMode: true,
+    tier: "paid",
+    costPerGen: 0.005,
   },
   {
     id: "anthropic/claude-opus-4",
     name: "Claude Opus 4",
     provider: "Anthropic",
     providerColor: "text-orange-400",
-    minTier: "agency",
     description: "Maximum quality for mission-critical content",
     supportsJsonMode: true,
+    tier: "paid",
+    costPerGen: 0.015,
   },
 ];
 
-export function getModelsForTier(tier: string): AIModel[] {
-  const userLevel = TIER_ORDER[tier] ?? 0;
-  return AVAILABLE_MODELS.filter(m => {
-    const modelLevel = TIER_ORDER[m.minTier] ?? 0;
-    return modelLevel <= userLevel;
-  });
+export function getFreeModels(): ModelPoolEntry[] {
+  return MODEL_POOL.filter(m => m.tier === "free");
 }
 
-export function getModelById(id: string): AIModel | undefined {
-  return AVAILABLE_MODELS.find(m => m.id === id);
+export function getPaidModels(): ModelPoolEntry[] {
+  return MODEL_POOL.filter(m => m.tier === "paid");
 }
 
-export function isModelAccessible(modelId: string, tier: string): boolean {
-  const model = getModelById(modelId);
-  if (!model) return false;
-  const userLevel = TIER_ORDER[tier] ?? 0;
-  const modelLevel = TIER_ORDER[model.minTier] ?? 0;
-  return modelLevel <= userLevel;
+export function getModelById(id: string): ModelPoolEntry | undefined {
+  return MODEL_POOL.find(m => m.id === id);
 }
 
-export function getAutoModel(tier: string): string {
-  if (tier === "free") return "~google/gemini-flash-latest";
-  if (tier === "creator") return "openai/gpt-4o-mini";
-  return "anthropic/claude-sonnet-4";
+export function pickModelForTier(tier: "free" | "paid" | "degraded", preferred?: string): ModelPoolEntry {
+  if (tier === "paid" && preferred) {
+    const model = getModelById(preferred);
+    if (model && model.tier === "paid") return model;
+  }
+  if (tier === "paid") {
+    return getModelById("openai/gpt-4o-mini") || MODEL_POOL[3];
+  }
+  if (tier === "degraded") {
+    return getModelById("deepseek/deepseek-chat") || MODEL_POOL[2];
+  }
+  return getModelById("~google/gemini-flash-latest") || MODEL_POOL[1];
 }

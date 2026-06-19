@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Sparkles } from "lucide-react";
 import { toast } from "sonner";
 import ConfigPanel from "./ConfigPanel";
@@ -11,16 +11,10 @@ export default function ContentEditor() {
   const [projectId, setProjectId] = useState("");
   const [templateId, setTemplateId] = useState("");
   const [platform, setPlatform] = useState("twitter");
-  const [contentType, setContentType] = useState("announcement");
-  const [tone, setTone] = useState(50);
+  const [tone, setTone] = useState("professional");
   const [voiceProfileId, setVoiceProfileId] = useState("");
   const [topic, setTopic] = useState("");
   const [keyPoints, setKeyPoints] = useState<string[]>([]);
-  const [length, setLength] = useState("medium");
-  const [model, setModel] = useState("auto");
-  const [advancedOpen, setAdvancedOpen] = useState(false);
-  const [includeHashtags, setIncludeHashtags] = useState(true);
-  const [includeCta, setIncludeCta] = useState(true);
 
   const [generatedTitle, setGeneratedTitle] = useState("");
   const [generatedBody, setGeneratedBody] = useState("");
@@ -55,15 +49,11 @@ export default function ContentEditor() {
           project_id: projectId,
           template_id: templateId,
           platform,
-          content_type: contentType,
+          content_type: templateId ? "custom" : "announcement",
           tone,
           voice_profile_id: voiceProfileId || null,
           topic,
           key_points: keyPoints,
-          length,
-          model,
-          include_hashtags: includeHashtags,
-          include_cta: includeCta,
         }),
       });
 
@@ -114,11 +104,8 @@ export default function ContentEditor() {
               <ConfigPanel
                 projectId={projectId}
                 onProjectChange={setProjectId}
-                templateId={templateId}
                 platform={platform}
                 onPlatformChange={setPlatform}
-                contentType={contentType}
-                onContentTypeChange={setContentType}
                 tone={tone}
                 onToneChange={setTone}
                 voiceProfileId={voiceProfileId}
@@ -127,16 +114,6 @@ export default function ContentEditor() {
                 onTopicChange={setTopic}
                 keyPoints={keyPoints}
                 onKeyPointsChange={setKeyPoints}
-                length={length}
-                onLengthChange={setLength}
-                model={model}
-                onModelChange={setModel}
-                advancedOpen={advancedOpen}
-                onAdvancedToggle={() => setAdvancedOpen(!advancedOpen)}
-                includeHashtags={includeHashtags}
-                onIncludeHashtagsChange={setIncludeHashtags}
-                includeCta={includeCta}
-                onIncludeCtaChange={setIncludeCta}
               />
 
               <button

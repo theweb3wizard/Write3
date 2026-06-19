@@ -1,5 +1,6 @@
 import { generateJsonCompletion } from "./client";
-import { isModelAccessible, getAutoModel } from "./models";
+import { checkCompliance } from "./compliance";
+import type { ModelPoolEntry } from "./models";
 
 interface GenerateContentParams {
   project: {
@@ -18,8 +19,8 @@ interface GenerateContentParams {
     content_type: string;
   };
   variables: Record<string, string>;
-  model: string;
-  tier: string;
+  model: ModelPoolEntry;
+  apiKey: string;
   length?: string;
 }
 
@@ -58,6 +59,8 @@ function getPlatformFormattingRules(platform: string): string {
       return "- Concise and punchy. Avoid walls of text.\n- Use bullet points and emojis to structure the update.\n- End with a community engagement question.";
     case "farcaster":
       return "- Under 320 characters in total.\n- Conversational, degen-friendly builder vibes.\n- Do NOT use hashtags unless requested.\n- Keep it concise.";
+    case "reddit":
+      return "- Write in a messy, authentic degen voice. Imperfect formatting.\n- Share real experiences and specific numbers.\n- Be transparent about biases. Admit uncertainty.\n- Never promotional or corporate. No exclamation marketing.\n- Use 'I' and 'we'. Engage skeptics directly.\n- Include concrete data points and personal anecdotes.";
     case "blog":
       return "- Structured markdown layout with #, ##, and ### headers.\n- Detailed explanations, paragraphs, and list blocks.\n- Technical but clear.";
     case "newsletter":
@@ -87,7 +90,8 @@ function buildSystemPrompt(params: GenerateContentParams): string {
     `4. NEVER fabricate specific metrics, token prices, TVL numbers, partnership announcements, or launch dates. If a specific data point is needed, describe the concept generally. Only use facts explicitly provided in the user's key points.`,
     `5. NEVER claim a project "just launched," "is about to launch," or reference specific dates/timelines unless the user explicitly provided them.`,
     `6. NEVER mention investment advice, price predictions, or financial guarantees. This is marketing content, not financial advice.`,
-    `7. If the user's topic or key points are ambiguous, ask for clarity through the content rather than guessing specifics.`,
+    `7. NEVER use terms like: "passive income", "guaranteed returns", "get rich", "risk-free", "financial advice", "to the moon". These are compliance violations.`,
+    `8. If the user's topic or key points are ambiguous, ask for clarity through the content rather than guessing specifics.`,
     ``,
     template.system_message ? `Additional template rules:\n${template.system_message}` : "",
     voiceProfile?.system_prompt ? `Custom voice signature rules:\n${voiceProfile.system_prompt}` : "",
@@ -106,13 +110,9 @@ function buildSystemPrompt(params: GenerateContentParams): string {
 }
 
 export async function generateContent(params: GenerateContentParams): Promise<GeneratedContentOutput> {
-  const { project, template, variables, model: modelId, tier, length = "medium" } = params;
+  const { project, template, variables, model, apiKey } = params;
 
-  if (!isModelAccessible(modelId, tier)) {
-    throw new Error(`Model "${modelId}" is not available on your ${tier} plan`);
-  }
-
-  let resolvedModel = modelId === "auto" ? getAutoModel(tier) : modelId;
+  let currentModel = model;
 
   let userPrompt = template.default_prompt;
   Object.entries(variables).forEach(([key, value]) => {
@@ -121,19 +121,20 @@ export async function generateContent(params: GenerateContentParams): Promise<Ge
 
   const systemPrompt = buildSystemPrompt(params);
 
-  let lastError: any = null;
+  let lastError: unknown = null;
   const maxRetries = 3;
 
   const fallbackModels = ["~google/gemini-flash-latest", "deepseek/deepseek-chat"];
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
-      const providerOrder = resolvedModel.includes("gemini")
+      const providerOrder = currentModel.id.includes("gemini")
         ? { order: ["Google", "DeepInfra", "Novita"], allow_fallbacks: true }
         : undefined;
 
       const response = await generateJsonCompletion({
-        model: resolvedModel,
+        model: currentModel.id,
+        apiKey,
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -148,6 +149,12 @@ export async function generateContent(params: GenerateContentParams): Promise<Ge
       }
 
       const parsedOutput = JSON.parse(responseText);
+
+      const outputText = `${parsedOutput.title || ""} ${parsedOutput.body || ""}`;
+      const { warnings } = checkCompliance(outputText);
+      if (warnings.length > 0) {
+        console.warn("Compliance warnings for generated content:", warnings);
+      }
 
       const hashtags = parsedOutput.metadata?.hashtags || [];
       const mentions = parsedOutput.metadata?.mentions || [];
@@ -166,7 +173,7 @@ export async function generateContent(params: GenerateContentParams): Promise<Ge
         title: parsedOutput.title || `${project.name} ${template.content_type}`,
         body: parsedOutput.body || "",
         metadata: { hashtags, mentions, thread_count },
-        model_used: response.model || resolvedModel,
+        model_used: response.model || currentModel.id,
         tokens_used: tokensUsed,
       };
     } catch (err: any) {
@@ -176,10 +183,25 @@ export async function generateContent(params: GenerateContentParams): Promise<Ge
       if (attempt < maxRetries) {
         const isRateLimit = err.message?.includes("429") || err.message?.includes("rate_limit");
         const isOverloaded = err.message?.includes("503") || err.message?.includes("overloaded");
+        const isAuth = err.message?.includes("401") || err.message?.includes("402") || err.message?.includes("insufficient");
 
         if (isRateLimit || isOverloaded) {
-          resolvedModel = fallbackModels[attempt - 1] || resolvedModel;
-          console.warn(`Rate limit hit, falling back to ${resolvedModel} for retry`);
+          const fallbackId = fallbackModels[attempt - 1];
+          if (fallbackId) {
+            const fb = await import("./models").then(m => m.getModelById(fallbackId));
+            if (fb) currentModel = fb;
+          }
+          console.warn(`Rate limit hit, falling back to ${currentModel.id} for retry`);
+        }
+
+        if (isAuth) {
+          currentModel = currentModel.tier === "paid"
+            ? (await import("./models").then(m => m.pickModelForTier("degraded")))
+            : currentModel;
+          console.warn(`Auth/insufficient funds on ${currentModel.id}, degraded`);
+
+          const router = await import("./router");
+          router.setDegradationCache(true);
         }
 
         await new Promise((resolve) => setTimeout(resolve, Math.pow(2, attempt) * 1000));
@@ -187,5 +209,6 @@ export async function generateContent(params: GenerateContentParams): Promise<Ge
     }
   }
 
-  throw new Error(`Content generation failed after ${maxRetries} attempts. Last error: ${lastError?.message || lastError}`);
+  const lastMessage = lastError instanceof Error ? lastError.message : String(lastError);
+  throw new Error(`Content generation failed after ${maxRetries} attempts. Last error: ${lastMessage}`);
 }

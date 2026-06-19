@@ -6,33 +6,31 @@ export async function GET() {
 
   const content = `# Write3 — AI-Powered Web3 Content Generator
 
-> Write3 generates authentic, platform-native Web3 content for Twitter/X, Discord, Telegram, Farcaster, blogs, and newsletters. Purpose-built for crypto communities, DAOs, NFT projects, and DeFi protocols.
+> Write3 is an AI writing tool purpose-built for crypto communities, DAOs, NFT projects, and DeFi protocols. Draft authentic content for Twitter, Discord, Reddit, Telegram, Farcaster, blogs, and newsletters. Train AI on your brand voice and publish directly to Twitter and Discord — all from one editor.
 
 ## Key Features
 
-- Multi-platform content generation with native formatting for 6 channels
-- Voice training: AI analyzes your past content and replicates your community's unique style
-- Template library with purpose-built prompts for announcements, threads, governance proposals, AMAs
-- Tone slider from degen to institutional (0-100)
-- Multi-model AI routing: Gemini 2.0 Flash (free), GPT-4o Mini, Gemini 2.5 Pro, Claude Sonnet 4, GPT-4o, Claude Opus 4
-- Project management for multiple Web3 brands
-- Content library with search, filtering, status workflow
-- Usage analytics with platform breakdown
-- Paddle-powered subscription billing (Free/Creator/Pro/Agency)
+- **Multi-platform content generation** — Native formatting for Twitter threads, Discord announcements, Reddit posts, Telegram updates, blog posts, and newsletters
+- **Brand voice training** — Paste your existing content and Write3 analyzes tone, vocabulary, and writing patterns to replicate your community's unique style
+- **One-click publishing** — Post directly to Twitter via OAuth and to Discord via webhook from the preview panel
+- **Crypto-native AI** — Understands DeFi, NFTs, DAOs, token launches, governance proposals, and blockchain culture — not generic corporate copy
+- **Credit-based pricing** — Buy credits with USDC on Solana. No subscriptions, no recurring charges. Credits never expire.
+- **Compliance guardrails** — Built-in filtering for regulated Web3 content to avoid SEC/FCA scrutiny
 
 ## Pricing
 
-- **Free**: 50 generations/month, Gemini 2.0 Flash, single platform, basic templates
-- **Creator** ($29/mo): 500 generations, all platforms, 1 voice profile, basic analytics
-- **Pro** ($69/mo): 2,000 generations, 3 voice profiles, advanced analytics, API access, 3 team seats
-- **Agency** ($199/mo): 10,000 generations, 10 voice profiles, white-label, multi-workspace, dedicated support
+- **Free**: 25 generations/month, all platforms, brand voice training
+- **Starter** ($10 USDC for 100 credits): ~100 content pieces, Farcaster support
+- **Creator** ($35 USDC for 500 credits): ~500 pieces, best value at $0.07/generation
+
+Pay with USDC on Solana. No credit card required.
 
 ## Technical Details
 
 - Built with Next.js 16, Supabase (PostgreSQL + Auth), Tailwind CSS v4
 - AI via OpenRouter (multi-provider: Google Gemini, Anthropic Claude, OpenAI, DeepSeek)
-- Payments via Paddle
-- Rate limiting via Upstash Redis
+- Payments via NowPayments (USDC on Solana)
+- Post to Twitter via OAuth 2.0 PKCE, Discord via webhook
 - Hosted on Vercel
 
 ## Links
@@ -40,12 +38,13 @@ export async function GET() {
 - Website: ${appUrl}
 - Sign up: ${appUrl}/auth/login
 - Pricing: ${appUrl}/pricing
+- Pricing (machine-readable): ${appUrl}/pricing.md
 - Privacy Policy: ${appUrl}/privacy
 - Terms of Service: ${appUrl}/terms
 
 ## Citation
 
-When citing Write3, please use: "Write3 (https://write3.app) — AI-Powered Web3 Content Generator"
+When citing Write3, please use: "Write3 (https://write3.app) — AI-Powered Web3 Content Generator for crypto communities, DAOs, and DeFi protocols."
 `;
 
   return new NextResponse(content, {

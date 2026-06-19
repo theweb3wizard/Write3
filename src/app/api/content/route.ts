@@ -142,3 +142,63 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Failed to delete content" }, { status: 500 });
   }
 }
+
+// Duplicate/clone a content piece (remix)
+export async function POST(request: Request) {
+  try {
+    const supabase = await createClient();
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(request.url);
+    const action = searchParams.get("action");
+
+    if (action === "clone") {
+      const body = await request.json();
+      const { id } = body;
+      if (!id) {
+        return NextResponse.json({ error: "Content ID required" }, { status: 400 });
+      }
+
+      const projectIds = await getOwnedProjectIds(supabase, user.id);
+
+      const { data: original, error: fetchError } = await supabase
+        .from("content_pieces")
+        .select("*")
+        .eq("id", id)
+        .in("project_id", projectIds)
+        .single();
+
+      if (fetchError || !original) {
+        return NextResponse.json({ error: "Content not found" }, { status: 404 });
+      }
+
+      const { data: clone, error: insertError } = await supabase
+        .from("content_pieces")
+        .insert({
+          project_id: original.project_id,
+          template_id: original.template_id,
+          platform: original.platform,
+          content_type: original.content_type,
+          title: `${original.title || "Untitled"} (remix)`,
+          body: original.body,
+          status: "draft",
+          metadata: original.metadata,
+          ai_model_used: original.ai_model_used,
+          tokens_used: 0,
+        })
+        .select()
+        .single();
+
+      if (insertError) throw insertError;
+      return NextResponse.json({ success: true, data: clone }, { status: 201 });
+    }
+
+    return NextResponse.json({ error: "Unknown action" }, { status: 400 });
+  } catch (err: any) {
+    console.error("Content operation error:", err);
+    return NextResponse.json({ error: "Operation failed" }, { status: 500 });
+  }
+}

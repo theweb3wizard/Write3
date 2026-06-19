@@ -2,24 +2,19 @@ import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { generateContent } from "@/lib/ai/content-generation";
-import { canGenerate, canUseBrandStyleAlignment, getGenerationLimit } from "@/lib/subscription/guards";
-import { checkRateLimit } from "@/lib/rate-limit";
-import { isModelAccessible } from "@/lib/ai/models";
+import { resolveGenerationConfig, setDegradationCache } from "@/lib/ai/router";
+import { canGenerate, resetFreeUsage } from "@/lib/subscription/guards";
 import { z } from "zod";
 
 const GenerateSchema = z.object({
   project_id: z.string().uuid(),
   template_id: z.string().uuid(),
-  platform: z.enum(["twitter", "discord", "telegram", "blog", "newsletter", "farcaster"]),
+  platform: z.enum(["twitter", "discord", "telegram", "blog", "newsletter", "farcaster", "reddit"]),
   content_type: z.string().min(1),
-  tone: z.number().int().min(0).max(100).optional().default(50),
+  tone: z.enum(["degen", "professional", "educational"]).optional().default("professional"),
   voice_profile_id: z.string().uuid().nullable().optional().default(null),
   topic: z.string().min(1).max(500),
   key_points: z.array(z.string().max(500)).max(10).optional().default([]),
-  length: z.enum(["short", "medium", "long"]).optional().default("medium"),
-  model: z.string().optional().default("auto"),
-  include_hashtags: z.boolean().optional().default(true),
-  include_cta: z.boolean().optional().default(true),
 });
 
 export async function POST(request: Request) {
@@ -39,11 +34,11 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const { project_id, template_id, platform, content_type, tone, voice_profile_id, topic, key_points, length, model, include_hashtags, include_cta } = parsed.data;
+    const { project_id, template_id, platform, content_type, tone, voice_profile_id, topic, key_points } = parsed.data;
 
     const { data: userProfile } = await supabase
       .from("users")
-      .select("subscription_tier, monthly_generation_count")
+      .select("credit_balance, free_generations_used, free_generations_reset_at, total_generations")
       .eq("id", user.id)
       .single();
 
@@ -51,29 +46,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "User profile not found" }, { status: 404 });
     }
 
-    const tier = userProfile.subscription_tier || "free";
-
-    if (!canGenerate(userProfile)) {
-      const limit = getGenerationLimit(tier);
+    const generationCheck = canGenerate(userProfile);
+    if (!generationCheck.allowed) {
       return NextResponse.json({
-        error: "Generation limit reached. Upgrade to continue generating.",
-        limit,
-        current: userProfile.monthly_generation_count,
+        error: generationCheck.reason,
       }, { status: 403 });
-    }
-
-    if (model !== "auto" && !isModelAccessible(model, tier)) {
-      return NextResponse.json({
-        error: `Model "${model}" is not available on your ${tier} plan. Upgrade to access it.`,
-      }, { status: 403 });
-    }
-
-    const rateLimitResult = await checkRateLimit(`generate:${user.id}`);
-    if (!rateLimitResult.success) {
-      return NextResponse.json({
-        error: "Rate limit exceeded. Please wait before generating again.",
-        retryAfter: rateLimitResult.reset,
-      }, { status: 429 });
     }
 
     const { data: project } = await supabase
@@ -100,10 +77,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Template not found" }, { status: 404 });
     }
 
-    if (voice_profile_id && !canUseBrandStyleAlignment(tier)) {
-      return NextResponse.json({ error: "Style profiles are not available on the Free plan. Upgrade to use them." }, { status: 403 });
-    }
-
     let voiceProfile = null;
     if (voice_profile_id) {
       const { data: vp } = await supabase
@@ -121,20 +94,20 @@ export async function POST(request: Request) {
       project_name: project.name,
       project_description: project.description || "",
       topic,
-      tone: tone.toString(),
+      tone,
       key_points: key_points.join("\n"),
       ...(template.variables as Record<string, string> || {}),
     };
 
-    if (include_hashtags) variables.include_hashtags = "true";
-    if (include_cta) variables.include_cta = "true";
+    // Resolve model routing based on user's credit balance
+    const genConfig = await resolveGenerationConfig(userProfile.credit_balance);
 
     const generated = await generateContent({
       project: {
         name: project.name,
         description: project.description || "",
         project_type: project.project_type,
-        tone_setting: typeof tone === "number" ? tone : project.tone_setting,
+        tone_setting: 50,
       },
       voiceProfile,
       template: {
@@ -144,9 +117,9 @@ export async function POST(request: Request) {
         content_type,
       },
       variables,
-      model,
-      tier,
-      length,
+      model: genConfig.model,
+      apiKey: genConfig.apiKey,
+      length: "medium",
     });
 
     const { data: contentPiece, error: insertError } = await supabase
@@ -172,16 +145,27 @@ export async function POST(request: Request) {
     }
 
     const adminClient = createAdminClient();
-    await adminClient.rpc("increment_generation_count", { user_id: user.id });
+    const { free_generations_reset_at: resetTime } = resetFreeUsage(userProfile);
+    const resetHappened = resetTime !== userProfile.free_generations_reset_at;
+    const usingFree = userProfile.credit_balance <= 0;
 
-    await supabase.from("usage_logs").insert({
-      user_id: user.id,
-      action_type: "generate",
-      resource_type: "content_piece",
-      resource_id: contentPiece.id,
-      tokens_used: generated.tokens_used,
-      metadata: { platform, content_type, model: generated.model_used },
-    });
+    if (usingFree) {
+      if (resetHappened) {
+        await adminClient
+          .from("users")
+          .update({ free_generations_used: 1, free_generations_reset_at: resetTime, total_generations: userProfile.total_generations + 1, updated_at: new Date().toISOString() })
+          .eq("id", user.id);
+      } else {
+        await adminClient.rpc("increment_free_usage", { user_id: user.id });
+      }
+    } else {
+      await adminClient.rpc("deduct_credit", { user_id: user.id });
+    }
+
+    // If a paid user got degraded, log it so developer knows
+    if (genConfig.tier === "degraded" && !usingFree) {
+      console.warn(`Paid user ${user.id} served degraded model due to insufficient premium API balance`);
+    }
 
     return NextResponse.json({
       success: true,
@@ -196,10 +180,9 @@ export async function POST(request: Request) {
         created_at: contentPiece.created_at,
       },
     });
-  } catch (err: any) {
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : "Content generation failed. Please try again.";
     console.error("Generation error:", err);
-    return NextResponse.json({
-      error: err.message || "Content generation failed. Please try again.",
-    }, { status: 500 });
+    return NextResponse.json({ error: message }, { status: 500 });
   }
 }

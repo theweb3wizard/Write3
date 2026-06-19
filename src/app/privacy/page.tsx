@@ -28,8 +28,7 @@ export default function PrivacyPage() {
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Account Information:</strong> Email address, username, and avatar URL when you sign up via email, GitHub, or Google OAuth.</li>
               <li><strong className="text-white">Content Data:</strong> Generated content pieces, project configurations, brand style analysis data, and template selections.</li>
-              <li><strong className="text-white">Payment Information:</strong> We use Paddle as our payment processor. Write3 does not store credit card numbers. Paddle collects billing information and shares only confirmation details with us.</li>
-              <li><strong className="text-white">Wallet Address:</strong> If you choose to connect a Web3 wallet, we store your public wallet address for personalization features.</li>
+              <li><strong className="text-white">Payment Information:</strong> We use NowPayments as our payment processor. Write3 does not store any payment credentials. Payment transactions are processed via USDC on the Solana blockchain.</li>
             </ul>
           </section>
 
@@ -55,9 +54,8 @@ export default function PrivacyPage() {
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Supabase:</strong> Database hosting and authentication</li>
               <li><strong className="text-white">Google AI:</strong> Content generation processing</li>
-              <li><strong className="text-white">Paddle:</strong> Payment processing and subscription management</li>
+              <li><strong className="text-white">NowPayments:</strong> Payment processing</li>
               <li><strong className="text-white">Vercel:</strong> Application hosting and deployment</li>
-              <li><strong className="text-white">Upstash:</strong> Rate limiting and caching</li>
             </ul>
             <p className="mt-3">We do not sell your personal information to third parties.</p>
           </section>

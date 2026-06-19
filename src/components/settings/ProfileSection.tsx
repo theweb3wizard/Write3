@@ -1,22 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useUserStore } from "@/stores/userStore";
 import { createClient } from "@/lib/supabase/client";
 import { toast } from "sonner";
-import { Loader2, User } from "lucide-react";
+import { Loader2 } from "lucide-react";
 
 export default function ProfileSection() {
   const { user, fetchProfile } = useUserStore();
-  const [username, setUsername] = useState("");
+  const [username, setUsername] = useState(user?.username || "");
   const [isSaving, setIsSaving] = useState(false);
   const supabase = createClient();
-
-  useEffect(() => {
-    if (user?.username) {
-      setUsername(user.username);
-    }
-  }, [user]);
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault();

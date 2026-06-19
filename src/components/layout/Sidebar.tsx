@@ -1,6 +1,6 @@
 "use client";
 
-import { LayoutDashboard, FileText, FolderOpen, BookTemplate, Brain, BarChart3, Settings, CreditCard, LogOut, Menu, X } from "lucide-react";
+import { LayoutDashboard, FileText, Library, Settings, Zap, LogOut, Menu, X } from "lucide-react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useUserStore } from "@/stores/userStore";
@@ -10,10 +10,7 @@ import Logo from "@/components/ui/Logo";
 const navItems = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
   { href: "/generate", label: "Generate", icon: FileText },
-  { href: "/projects", label: "Projects", icon: FolderOpen },
-  { href: "/library", label: "Library", icon: BookTemplate },
-  { href: "/voice-training", label: "Brand Style Alignment", icon: Brain },
-  { href: "/analytics", label: "Analytics", icon: BarChart3 },
+  { href: "/library", label: "Library", icon: Library },
   { href: "/settings", label: "Settings", icon: Settings },
 ];
 
@@ -28,7 +25,7 @@ export default function Sidebar() {
     router.push("/auth/login");
   };
 
-  const isFree = user?.subscription_tier === "free";
+  const showBuyCredits = (user?.credit_balance ?? 0) === 0;
 
   return (
     <>
@@ -75,14 +72,14 @@ export default function Sidebar() {
         </nav>
 
         <div className="p-3 border-t border-card-border space-y-2">
-          {isFree && (
+          {showBuyCredits && (
             <Link
               href="/pricing"
               onClick={() => setMobileOpen(false)}
               className="flex items-center gap-2 w-full px-3 py-2.5 rounded-lg bg-gradient-premium text-white text-sm font-semibold hover:opacity-90 transition-opacity"
             >
-              <CreditCard className="h-4 w-4" />
-              Upgrade Plan
+              <Zap className="h-4 w-4" />
+              Buy Credits
             </Link>
           )}
 
@@ -92,7 +89,7 @@ export default function Sidebar() {
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-sm font-medium text-white truncate">{user?.username || "User"}</p>
-              <p className="text-xs text-gray-500 capitalize">{user?.subscription_tier || "free"}</p>
+              <p className="text-xs text-gray-500">{user?.credit_balance ?? 0} credits</p>
             </div>
           </div>
 

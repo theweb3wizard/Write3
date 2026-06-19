@@ -43,3 +43,20 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# IDE
+.vs/
+
+# logs
+*.log
+
+# agent config
+opencode.json
+
+# research notes
+ARCHITECTURE-REDESIGN.md
+RESEARCH-PROMPT.md
+master-blueprint-web3-ai-content-generator.md
+
+# pricing markdown
+public/pricing.md

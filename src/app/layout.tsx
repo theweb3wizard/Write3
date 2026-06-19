@@ -22,24 +22,40 @@ const appUrl = getAppUrl();
 
 const jsonLd = {
   "@context": "https://schema.org",
-  "@type": "WebApplication",
-  name: "Write3",
-  url: appUrl,
-  description: "Generate authentic Web3-native content for Discord, Telegram, Twitter/X, Farcaster, blogs, and newsletters.",
-  applicationCategory: "ContentGeneration",
-  operatingSystem: "Web",
-  offers: [
-    { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free plan" },
-    { "@type": "Offer", price: "29", priceCurrency: "USD", description: "Creator plan" },
-    { "@type": "Offer", price: "69", priceCurrency: "USD", description: "Pro plan" },
-    { "@type": "Offer", price: "199", priceCurrency: "USD", description: "Agency plan" },
+  "@graph": [
+    {
+      "@type": "WebApplication",
+      name: "Write3",
+      url: appUrl,
+      description: "Generate authentic Web3-native content for Twitter, Discord, Reddit, and Telegram. AI writing tool built for crypto communities, DAOs, and DeFi protocols.",
+      applicationCategory: "ContentGeneration",
+      operatingSystem: "Web",
+      offers: [
+        { "@type": "Offer", price: "0", priceCurrency: "USD", description: "Free plan — 25 generations/month" },
+        { "@type": "Offer", price: "10", priceCurrency: "USD", description: "Starter — 100 credits" },
+        { "@type": "Offer", price: "35", priceCurrency: "USD", description: "Creator — 500 credits" },
+      ],
+      featureList: [
+        "Multi-platform content generation for Twitter, Discord, Reddit, Telegram, Blog, Newsletter",
+        "Brand voice training and style alignment",
+        "One-click publish to Twitter and Discord",
+        "USDC on Solana payments — no credit card required",
+        "AI compliance guardrails for Web3 content",
+      ],
+    },
+    {
+      "@type": "Organization",
+      name: "Write3",
+      url: appUrl,
+      description: "AI-powered Web3 content generation platform for crypto communities, DAOs, and DeFi protocols.",
+    },
   ],
 };
 
 export const metadata: Metadata = {
   metadataBase: new URL(appUrl),
   title: {
-    default: "Write3 | AI-Powered Web3 Content Generator",
+    default: "Write3 | Compliance-Safe AI Voice Clone for Web3 Content",
     template: "%s | Write3",
   },
   description: defaultMetadata.description,
@@ -53,7 +69,7 @@ export const metadata: Metadata = {
     ],
   },
   openGraph: {
-    title: "Write3 | AI-Powered Web3 Content Generator",
+    title: "Write3 | Compliance-Safe AI Voice Clone for Web3 Content",
     description: defaultMetadata.description as string,
     url: appUrl,
     siteName: "Write3",
@@ -64,14 +80,14 @@ export const metadata: Metadata = {
         url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "Write3 - AI-Powered Web3 Content Generator",
+        alt: "Write3 - AI-powered Web3 content with compliance guardrails",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "Write3 | AI-Powered Web3 Content Generator",
-    description: "Generate authentic Web3-native content for your community.",
+    title: "Write3 | Compliance-Safe AI Voice Clone for Web3 Content",
+    description: "Clone your brand voice. Generate compliant Web3 content. No SEC risk.",
     images: ["/og-image.png"],
   },
 };
