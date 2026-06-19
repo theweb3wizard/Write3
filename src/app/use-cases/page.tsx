@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import Logo from "@/components/ui/Logo";
-import { ArrowRight, FileText, MessageCircle, BookOpen, Building2, Shield, Users } from "lucide-react";
+import { ArrowRight, MessageCircle, BookOpen, Shield, Users, Megaphone, FileCode } from "lucide-react";
 
 export const metadata: Metadata = {
   title: "Use Cases",
@@ -10,63 +10,63 @@ export const metadata: Metadata = {
 
 const useCases = [
   {
-    icon: FileText,
-    title: "Technical Documentation & Drafting",
-    description: "Write3 helps technical writers and developers draft clear, accurate documentation for protocols, smart contracts, and dApps. From API references to integration guides, our AI assists in structuring complex technical information while you maintain full editorial control.",
+    icon: Megaphone,
+    title: "Community Updates & Announcements",
+    description: "Draft weekly development reports, milestone announcements, and ecosystem news that sound like your community's voice — not generic corporate copy. Write3 formats natively for Discord announcements, Twitter threads, and Reddit posts, with compliance guardrails that flag risky language before publishing.",
     highlights: [
-      "Draft protocol documentation and README files",
-      "Create developer tutorials and integration guides",
-      "Generate consistent technical terminology across documents",
+      "Draft multi-platform announcements from a single input",
+      "Maintain consistent brand voice across Discord, Twitter, and Telegram",
+      "Built-in SEC/FCA guardrails catch regulated language before it publishes",
     ],
   },
   {
-    icon: MessageCircle,
-    title: "Community Updates & Announcements",
-    description: "Community managers use Write3 to draft regular project updates, milestone announcements, and ecosystem news. The tool helps maintain consistent messaging across Discord, Telegram, and Twitter while preserving each project's unique community voice.",
+    icon: FileCode,
+    title: "Technical Documentation & Release Notes",
+    description: "Generate clear protocol documentation, integration guides, and release notes with consistent technical terminology. Write3's voice cloning ensures your docs read like your team wrote them — because your team trained the voice profile on actual examples.",
     highlights: [
-      "Draft weekly community updates and development reports",
-      "Create consistent multi-platform announcements",
-      "Maintain brand voice across all communication channels",
+      "Create developer tutorials and integration guides from technical specs",
+      "Generate consistent changelogs and release announcements",
+      "Maintain your project's unique technical communication style",
     ],
   },
   {
     icon: BookOpen,
     title: "Educational Content & Tutorials",
-    description: "Create educational content that helps onboard new users to your protocol or platform. Write3 assists in breaking down complex Web3 concepts into accessible, well-structured educational materials that undergo human expert review before publication.",
+    description: "Create beginner-friendly guides that onboard new users to your protocol or platform. Write3 breaks down complex Web3 concepts into accessible, well-structured educational content — reviewed and approved by human experts before publication.",
     highlights: [
-      "Draft beginner-friendly guides and explainers",
-      "Create structured educational series and courses",
-      "Generate quiz questions and learning assessments",
-    ],
-  },
-  {
-    icon: Building2,
-    title: "Governance Proposals & DAO Communications",
-    description: "DAO contributors use Write3 to draft clear, structured governance proposals, voting rationales, and community discussion documents. The AI assists with formatting and clarity while human authors maintain responsibility for accuracy and strategic direction.",
-    highlights: [
-      "Draft improvement proposals (e.g., WIP, ZIP formats)",
-      "Create voting summaries and rationale documents",
-      "Draft treasury management reports and budget proposals",
-    ],
-  },
-  {
-    icon: Shield,
-    title: "Compliance & Risk Communication",
-    description: "Legal and compliance teams can leverage Write3 to draft clear risk disclosures, terms updates, and compliance communications. All content requires expert legal review and approval before any publication or distribution.",
-    highlights: [
-      "Draft risk disclosure statements and disclaimers",
-      "Create clear terms of service updates communication",
-      "Draft incident response and post-mortem summaries",
+      "Draft explainers for DeFi protocols, NFT mechanics, and DAO governance",
+      "Create structured educational series across blog, Twitter, and newsletter",
+      "Generate quiz questions and learning assessments for community education",
     ],
   },
   {
     icon: Users,
-    title: "Project Management & Internal Updates",
-    description: "Development teams use Write3 to streamline internal communication by drafting standup summaries, sprint reports, and project milestones. This allows team members to focus more time on building while maintaining clear project documentation.",
+    title: "Governance Proposals & DAO Communications",
+    description: "Draft clear, structured governance proposals, voting rationales, and community discussion documents. Write3 helps with formatting and clarity while human authors maintain responsibility for accuracy and strategic direction.",
     highlights: [
-      "Draft sprint retrospectives and progress reports",
-      "Create structured meeting agendas and notes",
-      "Generate consistent project status updates",
+      "Draft improvement proposals (WIP, ZIP, and custom formats)",
+      "Create voting summaries and rationale documents",
+      "Generate treasury management reports and budget proposals",
+    ],
+  },
+  {
+    icon: Shield,
+    title: "Compliance-Critical Content",
+    description: "For projects operating in regulated environments, Write3's compliance guardrails automatically scan prompts and generated output for terms that could trigger SEC or FCA scrutiny — including 'guaranteed returns', 'passive income', 'financial advice', and 'price prediction'. Warnings appear before generation, not after publication.",
+    highlights: [
+      "Automatic scanning of output for regulated financial language",
+      "Pre-generation warnings, not post-publication surprises",
+      "Audit trail of compliance checks for internal review",
+    ],
+  },
+  {
+    icon: MessageCircle,
+    title: "Multi-Platform Content Operations",
+    description: "Web3 projects managing presence across Discord, Twitter, Reddit, Telegram, and Farcaster use Write3 to maintain consistent messaging everywhere. A single topic generates platform-native formatting for each channel — Twitter threads with tweet breaks, Discord embeds, Reddit posts with proper structure.",
+    highlights: [
+      "Generate content for 7+ platforms from one topic input",
+      "Native formatting per platform — no manual reformatting",
+      "Save drafts to library, publish to Discord with one click",
     ],
   },
 ];
@@ -90,15 +90,14 @@ export default function UseCasesPage() {
       <main className="max-w-7xl mx-auto px-4 py-16">
         <div className="text-center mb-16">
           <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-electric-indigo/10 border border-electric-indigo/20 text-sm text-electric-indigo mb-6">
-            <FileText className="h-4 w-4" />
-            Professional Use Cases
+            <Shield className="h-4 w-4" />
+            Compliance-Safe AI for Web3 Teams
           </div>
           <h1 className="text-4xl md:text-5xl font-bold text-white mb-4">
-            Built for <span className="text-gradient">Professional Content Teams</span>
+            Web3 Content, <span className="text-gradient">Compliance-Safe</span>
           </h1>
           <p className="text-gray-400 max-w-2xl mx-auto text-lg">
-            Write3 is a productivity tool designed for human content creators in the Web3 space. 
-            Every piece of generated content requires human review, editing, and approval before publication.
+            Write3 is a compliance-safe AI voice clone for Web3 content creators. Generate authentic, platform-native content for Twitter, Discord, Reddit, Telegram, and blogs — with built-in SEC/FCA guardrails. Every output requires human review before publication.
           </p>
         </div>
 
@@ -127,11 +126,9 @@ export default function UseCasesPage() {
 
         <div className="mt-16 text-center">
           <div className="rounded-2xl border border-card-border bg-card p-10 max-w-3xl mx-auto">
-            <h2 className="text-2xl font-bold text-white mb-3">Human-Centric AI Assistance</h2>
+            <h2 className="text-2xl font-bold text-white mb-3">Voice Clone + Compliance Guardrails</h2>
             <p className="text-gray-400 mb-6">
-              Write3 is designed to augment human creativity, not replace it. Our platform provides drafting assistance 
-              and structure suggestions, but every piece of content is reviewed, refined, and approved by human creators 
-              before it reaches your audience.
+              Train Write3 on 3-5 writing samples and every generation matches your brand voice — automatically checked for SEC/FCA compliance risks. No generic AI copy. No regulatory surprises.
             </p>
             <Link
               href="/auth/login"

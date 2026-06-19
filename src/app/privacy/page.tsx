@@ -46,7 +46,7 @@ export default function PrivacyPage() {
 
           <section>
             <h2 className="text-lg font-semibold text-white mb-3">3. AI Content Processing</h2>
-            <p>Content you generate is processed through Google's Gemini API. We send your project context, template prompts, and voice profile data to generate content. Google does not use your data to train their models. See <Link href="https://ai.google.dev/" className="text-electric-indigo hover:underline">Google AI's privacy policy</Link> for details.</p>
+            <p>Content you generate is processed through OpenRouter, an intermediary API that routes requests to multiple AI model providers including Google (Gemini), Anthropic (Claude), OpenAI (GPT-4o), and DeepSeek. We send your project context, template prompts, and voice profile data to generate content. These providers do not use your data to train their models. See <Link href="https://openrouter.ai/privacy" className="text-electric-indigo hover:underline">OpenRouter's privacy policy</Link> and each provider's respective policy for details.</p>
           </section>
 
           <section>
@@ -54,7 +54,7 @@ export default function PrivacyPage() {
             <p className="mb-3">We share your data only with essential service providers:</p>
             <ul className="list-disc pl-5 space-y-2">
               <li><strong className="text-white">Supabase:</strong> Database hosting and authentication</li>
-              <li><strong className="text-white">Google AI:</strong> Content generation processing</li>
+              <li><strong className="text-white">OpenRouter:</strong> AI model routing (forwards data to Google, Anthropic, OpenAI, DeepSeek)</li>
               <li><strong className="text-white">NowPayments:</strong> Payment processing</li>
               <li><strong className="text-white">Vercel:</strong> Application hosting and deployment</li>
             </ul>
