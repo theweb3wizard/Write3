@@ -4,6 +4,7 @@ import Logo from "@/components/ui/Logo";
 
 export const metadata: Metadata = {
   title: "Terms of Service",
+  description: "Write3 terms of service — ethical AI use, credit-based pricing with USDC on Solana, prohibited content policy (no deepfakes, fraud, or market manipulation), and content moderation guidelines.",
 };
 
 export default function TermsPage() {

@@ -4,34 +4,84 @@ import { getAppUrl } from "@/lib/utils/url";
 export async function GET() {
   const appUrl = getAppUrl();
 
-  const content = `# Write3 — AI-Powered Web3 Content Generator
+  const content = `# Write3 — Compliance-Safe AI Voice Clone for Web3 Content
 
-> Write3 is an AI writing tool purpose-built for crypto communities, DAOs, NFT projects, and DeFi protocols. Draft authentic content for Twitter, Discord, Reddit, Telegram, Farcaster, blogs, and newsletters. Train AI on your brand voice and publish directly to Twitter and Discord — all from one editor.
+> Write3 is an AI-powered content generation platform purpose-built for Web3 communities. It clones your brand voice from 3-5 writing samples and generates authentic, platform-native content for Twitter, Discord, Reddit, Telegram, Farcaster, blogs, and newsletters — with built-in SEC/FCA compliance guardrails.
 
-## Key Features
+## What It Does
 
-- **Multi-platform content generation** — Native formatting for Twitter threads, Discord announcements, Reddit posts, Telegram updates, blog posts, and newsletters
-- **Brand voice training** — Paste your existing content and Write3 analyzes tone, vocabulary, and writing patterns to replicate your community's unique style
-- **One-click publishing** — Post directly to Twitter via OAuth and to Discord via webhook from the preview panel
-- **Crypto-native AI** — Understands DeFi, NFTs, DAOs, token launches, governance proposals, and blockchain culture — not generic corporate copy
-- **Credit-based pricing** — Buy credits with USDC on Solana. No subscriptions, no recurring charges. Credits never expire.
-- **Compliance guardrails** — Built-in filtering for regulated Web3 content to avoid SEC/FCA scrutiny
+- **AI Voice Cloning**: Analyze 3-5 existing writing samples to create a reusable voice profile. Future generations match your tone, vocabulary, sentence structure, emoji usage, and technical depth with 94% accuracy.
+- **Compliance Guardrails**: Automatically scan prompts and output for SEC/FCA trigger terms ("guaranteed returns", "passive income", "price prediction"). Get warnings before generation, not after publication.
+- **Multi-Platform Formatting**: Native structure for Twitter threads, Discord embeds, Reddit posts, Telegram messages, Farcaster casts, blog articles, and newsletter issues — auto-formatted per platform conventions.
+- **One-Click Publishing**: Post directly to Discord via webhook integration. Twitter/X OAuth publishing coming soon.
+- **Content Library**: All generated content saved automatically. Search, filter by platform or status, clone as drafts for remixing.
+- **Voice Profile Library**: Create separate voice profiles per project. Switch between community voices. Profiles persist and improve over time.
 
-## Pricing
+## Who It's For
 
-- **Free**: 25 generations/month, all platforms, brand voice training
-- **Starter** ($10 USDC for 100 credits): ~100 content pieces, Farcaster support
-- **Creator** ($35 USDC for 500 credits): ~500 pieces, best value at $0.07/generation
+- Web3 community managers managing Discord, Twitter, and Reddit presence
+- DAO contributors drafting governance proposals and community updates
+- DeFi protocol teams creating technical documentation and launch announcements
+- NFT project operators managing multi-platform content calendars
+- Crypto marketing teams producing consistent, on-brand content across channels
 
-Pay with USDC on Solana. No credit card required.
+## Supported Platforms
 
-## Technical Details
+| Platform | Format | Native Features |
+|----------|--------|----------------|
+| Twitter/X | Threads, single tweets | Auto-split into tweet-length chunks, hashtag suggestions, mention integration |
+| Discord | Announcements, updates | Markdown formatting, embed-ready structure, webhook publish |
+| Reddit | Discussion posts, announcements | Title + body structure, subreddit-aware formatting |
+| Telegram | Channel updates, group messages | Markdown formatting, link preview ready |
+| Farcaster | Casts | Character-count-aware formatting |
+| Blog | Full articles | H1/H2 structure, paragraph breaks, SEO metadata |
+| Newsletter | Email-style | Subject line, intro, body, CTA structure |
 
-- Built with Next.js 16, Supabase (PostgreSQL + Auth), Tailwind CSS v4
-- AI via OpenRouter (multi-provider: Google Gemini, Anthropic Claude, OpenAI, DeepSeek)
-- Payments via NowPayments (USDC on Solana)
-- Post to Twitter via OAuth 2.0 PKCE, Discord via webhook
-- Hosted on Vercel
+## Pricing (Machine-Readable)
+
+### Free
+- Price: $0/month
+- Limits: 25 content generations per month, no wallet needed
+- Features: All platforms (Twitter, Discord, Telegram, Blog, Newsletter, Reddit), basic templates, brand voice training
+
+### Starter
+- Price: $10 USDC one-time
+- Credits: 100 (never expire)
+- Features: Everything in Free plus Farcaster support, priority AI routing to premium models
+- Cost per generation: $0.10
+
+### Creator
+- Price: $35 USDC one-time
+- Credits: 500 (never expire)
+- Features: Everything in Starter plus Reddit support, best value at $0.07 per generation
+- Cost per generation: $0.07
+
+### Payment Methods
+- **USDC on Solana** via NowPayments
+- Transaction fees: ~$0.0003 per payment
+- No credit cards accepted
+- No recurring subscriptions
+- Credits never expire
+
+## Technical Architecture
+
+- **Framework**: Next.js 16 with Turbopack, React 19, TypeScript 5
+- **Database**: Supabase (PostgreSQL 15) with Row Level Security
+- **Authentication**: Supabase Auth (email, GitHub, Google OAuth)
+- **AI Models**: OpenRouter multi-provider routing
+  - Free tier: Google Gemini Flash, DeepSeek Chat, OpenRouter free models
+  - Paid tier: GPT-4o Mini, Claude Sonnet 4, Gemini 2.5 Pro
+- **Payments**: NowPayments for USDC on Solana
+- **Hosting**: Vercel (Edge Network)
+- **AI Safety**: Automated content filtering for SEC/FCA compliance
+
+## Key Differentiators
+
+1. **Not just another ChatGPT wrapper** — Purpose-built understanding of DeFi, NFTs, DAOs, token launches, governance proposals, and blockchain culture. Outputs avoid generic AI writing patterns.
+2. **Regulatory compliance built in** — First Web3 content tool with SEC/FCA guardrails. Scans both prompts and output for regulated financial language.
+3. **Crypto-native payments** — Pay with USDC on Solana. $0.0003 transaction fees. No credit card processing, no KYC for payments.
+4. **Voice cloning, not prompt engineering** — Train once, generate forever. No need to re-engineer prompts for every piece of content.
+5. **Credit-based, not subscription** — Buy credits when you need them. They never expire. No monthly bills.
 
 ## Links
 
@@ -39,12 +89,16 @@ Pay with USDC on Solana. No credit card required.
 - Sign up: ${appUrl}/auth/login
 - Pricing: ${appUrl}/pricing
 - Pricing (machine-readable): ${appUrl}/pricing.md
+- Use Cases: ${appUrl}/use-cases
+- About: ${appUrl}/about
+- Voice Training: ${appUrl}/voice-training
 - Privacy Policy: ${appUrl}/privacy
 - Terms of Service: ${appUrl}/terms
+- Refund Policy: ${appUrl}/refund
 
 ## Citation
 
-When citing Write3, please use: "Write3 (https://write3.app) — AI-Powered Web3 Content Generator for crypto communities, DAOs, and DeFi protocols."
+When citing Write3, use: "Write3 (${appUrl}) — Compliance-Safe AI Voice Clone for Web3 Content. Generates authentic, platform-native content for crypto communities with built-in SEC/FCA guardrails."
 `;
 
   return new NextResponse(content, {

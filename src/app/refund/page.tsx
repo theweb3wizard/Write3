@@ -4,6 +4,7 @@ import Logo from "@/components/ui/Logo";
 
 export const metadata: Metadata = {
   title: "Refund Policy",
+  description: "Write3 refund policy — 14-day refund window for unused credit purchases on USDC. Credits never expire. Refund requests processed within 5-10 business days.",
 };
 
 export default function RefundPage() {

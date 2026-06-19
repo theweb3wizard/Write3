@@ -4,8 +4,8 @@ import Logo from "@/components/ui/Logo";
 import { Shield, Sparkles, Building2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About Us - Write3 AI",
-  description: "Write3 is an AI-powered content productivity platform purpose-built for Web3 communities. We help community managers, DAO contributors, and Web3 marketing teams create authentic content efficiently.",
+  title: "About Us",
+  description: "Write3 is a compliance-safe AI voice clone for Web3 content creators. Our platform generates authentic, on-brand content for crypto communities with built-in SEC/FCA guardrails. No generic AI writing.",
 };
 
 export default function AboutPage() {
@@ -20,6 +20,11 @@ export default function AboutPage() {
       </header>
 
       <main className="max-w-4xl mx-auto px-4 py-12">
+        <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify({
+          "@context": "https://schema.org", "@type": "AboutPage",
+          name: "About Write3 — Compliance-Safe AI for Web3 Content",
+          description: "Write3 is an AI-powered content productivity platform for Web3 communities, DAOs, and crypto projects. Built-in SEC/FCA guardrails, voice cloning, and multi-platform publishing.",
+        })}} />
         <h1 className="text-3xl font-bold text-white mb-2">About Write3</h1>
         <p className="text-sm text-gray-500 mb-10">AI-powered content productivity for Web3 communities</p>
 

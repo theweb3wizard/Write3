@@ -4,8 +4,8 @@ import Logo from "@/components/ui/Logo";
 import { ArrowRight, FileText, MessageCircle, BookOpen, Building2, Shield, Users } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Use Cases - Write3 AI",
-  description: "Discover how Web3 projects use Write3 for ethical, B2B-focused content creation — from technical documentation to community updates and governance proposals.",
+  title: "Use Cases",
+  description: "Discover how Web3 teams use Write3's compliance-safe AI voice clone for technical documentation, community updates, governance proposals, and educational content. Built for DeFi, DAOs, NFT projects, and crypto protocols.",
 };
 
 const useCases = [

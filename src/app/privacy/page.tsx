@@ -4,6 +4,7 @@ import Logo from "@/components/ui/Logo";
 
 export const metadata: Metadata = {
   title: "Privacy Policy",
+  description: "Write3 privacy policy — how we collect, use, and protect your data. We use Supabase for auth, Google Gemini for AI generation, and NowPayments for USDC on Solana transactions. No data sold to third parties.",
 };
 
 export default function PrivacyPage() {
